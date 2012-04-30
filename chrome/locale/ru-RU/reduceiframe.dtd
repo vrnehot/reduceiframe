@@ -1,0 +1,16 @@
+<!ENTITY setitle.stopNotify "Не извещать меня о подавленной активности:">
+<!ENTITY tooltiptext.stopNotify "характеристика пользовательского интерфейса">
+<!ENTITY tooltiptext.lessRestrict "смягчение ограничений">
+<!ENTITY setitle.stopOnlyIframe "Подавлять только елементы IFRAME:">
+<!ENTITY setitle.stopOnlyXSite "Подавлять только междоменное взаимодействие:">
+<!ENTITY tooltiptext.stopOnlyXSite "рекомендуется для почтового клиента или соцсетей">
+<!ENTITY setitle.stopJScriptSchema "Всегда подавлять JavaScript">
+<!ENTITY setdesc.tailstopJScript "здесь усиление ограничений, в пунктах выше условия их обхода.">
+<!ENTITY eraseIFrameCmd.label   "Удалить фрейм">
+<!ENTITY eraseIFrameCmd.accesskey  "У">
+<!ENTITY sandboxFrameCmd.label   "Открыть фрейм в песочнице">
+<!ENTITY sandboxFrameCmd.accesskey  "О">
+<!ENTITY eraseImage.label   "Удалить изображение">
+<!ENTITY eraseImage.accesskey  "У">
+<!ENTITY openLinkCmdInSandbox.label   "Открыть в песочнице">
+<!ENTITY openLinkCmdInSandbox.accesskey  "п">

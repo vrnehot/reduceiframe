@@ -1,0 +1,11 @@
+content   reduceiframe                 chrome/content/
+skin      reduceiframe   classic/1.0   chrome/skin/
+resource  reduceiframe                 chrome/
+locale    reduceiframe   en-US         chrome/locale/en-US/
+locale    reduceiframe	 ru-RU         chrome/locale/ru-RU/
+
+overlay   chrome://browser/content/browser.xul   chrome://reduceiframe/content/reduceiframe.xul
+
+component	{09CBF9A1-1CD8-42CD-9F80-B607BB9D34FC}                      components/reduceiframe.js
+contract	@mozdev.org/reduceiframe;1                     {09CBF9A1-1CD8-42CD-9F80-B607BB9D34FC}
+category	content-policy      subdocument-content-policy-component    @mozdev.org/reduceiframe;1

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+  <Description about="urn:mozilla:install-manifest">
+      <em:id>reduceiframe@mozdev.org</em:id>
+      <em:version>0.1.1</em:version>
+
+		<em:localized>
+		  <Description>
+			<em:locale>ru-RU</em:locale>
+			<em:name>reduce IFrame</em:name>
+			<em:description>Это расширение накладывет ряд ограничений на елементы позволяющие встраивать документы друг в друга.</em:description>
+		  </Description>
+		</em:localized>
+
+      <em:name>reduce IFrame</em:name>
+      <em:description>This extension reduces some influences of the subdocuments that contained within the top document.</em:description>
+      <!-- em:creator Dmitry Konuhovsky	em:creator -->
+		<em:creator>&lt;kannoner@gmail.com&gt;</em:creator>
+        <!-- em:homepageURL http://code.google.com/p/knowredirect/ em:homepageURL -->
+      <em:type>2</em:type> <!-- type=extension --> 
+      <em:icon64URL>chrome://reduceiframe/content/bug.png</em:icon64URL>
+      <em:aboutURL>chrome://reduceiframe/content/about.xul</em:aboutURL>
+      <em:optionsURL>chrome://reduceiframe/content/options.xul</em:optionsURL>
+      <em:optionsType>2</em:optionsType>
+
+        <em:targetApplication>
+           <!-- Firefox -->
+           <Description>
+                <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+                <em:minVersion>5.5</em:minVersion>
+                <em:maxVersion>10.*</em:maxVersion>
+           </Description>
+        </em:targetApplication>
+
+  </Description>
+</RDF>

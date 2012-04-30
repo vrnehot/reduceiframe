@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://reduceiframe/skin/overlay.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://reduceiframe/locale/reduceiframe.dtd">
+
+<overlay id="reduceiframe-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+ 
+<script src="chrome://reduceiframe/content/reduceiframe.js" type="application/javascript" />
+
+ <menu id="frame" onpopupshowing="gReduceIframe = popReduceIframe(gContextMenu);"
+       onpopuphiding="gReduceIframe = null;" />
+ 
+ <menuitem id="context-bookmarkframe"
+           oncommand="gReduceIframe.sandboxLink(gContextMenu);"
+           label="&sandboxFrameCmd.label;" accesskey="&sandboxFrameCmd.accesskey;" />
+
+ <menuitem id="context-printframe"
+           oncommand="gReduceIframe.eraseFrame(gContextMenu.target.ownerDocument);"
+           label="&eraseIFrameCmd.label;"
+           accesskey="&eraseIFrameCmd.accesskey;" />
+
+  <menuitem id="context-reloadframe" oncommand="gReduceIframe.reloadFrame(gContextMenu.target.ownerDocument);"/>
+  <menuitem id="context-openframeintab" oncommand="gReduceIframe.doCmd(gContextMenu, 'openFrameInTab');"/>
+  <menuitem id="context-openframe" oncommand="gReduceIframe.doCmd(gContextMenu, 'openFrame');"/>
+  <menuitem id="context-showonlythisframe" oncommand="gReduceIframe.doCmd(gContextMenu, 'showOnlyThisFrame');"/>
+
+    <menupopup id="contentAreaContextMenu" >
+        <menuitem id="context-removeimage" label="&eraseImage.label;" hidden="true"
+                  insertafter="context-setDesktopBackground" accesskey="&eraseImage.accesskey;"
+                  oncommand="gContextMenu.target.parentNode.removeChild(gContextMenu.target);" />
+        <menuitem id="context-openlinksandbox" label="&openLinkCmdInSandbox.label;" hidden="true"
+                  insertafter="context-openlink" accesskey="&openLinkCmdInSandbox.accesskey;"
+                  oncommand="(new menuReduceIframe(true, gContextMenu.linkURL)).sandboxLink(gContextMenu);" />
+        <menuitem id="context-setDesktopBackground" disabled="true" />
+    </menupopup>
+  
+</overlay>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<!DOCTYPE groupbox SYSTEM "chrome://reduceiframe/locale/reduceiframe.dtd">
+
+<groupbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" >
+   <setting type="bool" pref="extensions.reduceiframe.stopNotify" disabled="true"
+	    title="&setitle.stopNotify;" tooltiptext="&tooltiptext.stopNotify;" />
+   <setting type="bool" pref="extensions.reduceiframe.stopOnlyIframe" title="&setitle.stopOnlyIframe;" tooltiptext="&tooltiptext.lessRestrict;" />
+   <setting type="bool" pref="extensions.reduceiframe.stopOnlyXSite" title="&setitle.stopOnlyXSite;" tooltiptext="&tooltiptext.stopOnlyXSite;" />
+   <setting type="bool" pref="extensions.reduceiframe.stopJScriptSchema" 
+	title="&setitle.stopJScriptSchema;" desc="&setdesc.tailstopJScript;" />
+</groupbox>
