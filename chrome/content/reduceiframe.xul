@@ -23,14 +23,4 @@
   <menuitem id="context-openframe" oncommand="gReduceIframe.doCmd(gContextMenu, 'openFrame');"/>
   <menuitem id="context-showonlythisframe" oncommand="gReduceIframe.doCmd(gContextMenu, 'showOnlyThisFrame');"/>
 
-    <menupopup id="contentAreaContextMenu" >
-        <menuitem id="context-removeimage" label="&eraseImage.label;" hidden="true"
-                  insertafter="context-setDesktopBackground" accesskey="&eraseImage.accesskey;"
-                  oncommand="gContextMenu.target.parentNode.removeChild(gContextMenu.target);" />
-        <menuitem id="context-openlinksandbox" label="&openLinkCmdInSandbox.label;" hidden="true"
-                  insertafter="context-openlink" accesskey="&openLinkCmdInSandbox.accesskey;"
-                  oncommand="(new menuReduceIframe(true, gContextMenu.linkURL)).sandboxLink(gContextMenu);" />
-        <menuitem id="context-setDesktopBackground" disabled="true" />
-    </menupopup>
-  
 </overlay>

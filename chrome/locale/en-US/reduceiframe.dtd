@@ -10,7 +10,3 @@
 <!ENTITY eraseIFrameCmd.accesskey  "E">
 <!ENTITY sandboxFrameCmd.label   "Open Frame in Sandbox">
 <!ENTITY sandboxFrameCmd.accesskey  "O">
-<!ENTITY eraseImage.label   "Erase Image">
-<!ENTITY eraseImage.accesskey  "E">
-<!ENTITY openLinkCmdInSandbox.label   "Open Link in Sandbox">
-<!ENTITY openLinkCmdInSandbox.accesskey  "S">

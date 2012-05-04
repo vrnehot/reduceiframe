@@ -286,31 +286,8 @@ var reduceIframe = {
 
   startup: function() // Initialize the extension
   {
-      dump("_dvk_dbg_, startup\n");
       eraseRefresh.updateRegistery();
       Services.prefs.addObserver(pref_BlockRefresh, this, false);
-
-  //	load overlay for remove image and sandbox link
-      if(document.loadOverlay)
-      if(Services.prefs.getBoolPref("extensions.reduceiframe.removeImage"))
-      {
-	  document.getElementById("contentAreaContextMenu").addEventListener( "popupshowing",
-	      function (e){
-		  document.getElementById("context-removeimage").hidden = !(gContextMenu.onImage && gContextMenu.onLoadedImage);
-		  document.getElementById("context-setDesktopBackground").hidden = true;
-	      } );
-      }
-
-      if(document.loadOverlay)
-      if(Services.prefs.getBoolPref("extensions.reduceiframe.sandboxLink"))
-      {
-	  document.getElementById("contentAreaContextMenu").addEventListener( "popupshowing",
-	      function (e){
-		  document.getElementById("context-openlinksandbox").hidden = !(gContextMenu.onLink);
-	      }
-	  );
-      }
-
   },
 
   observe: function(asubject, atopic, adata)
@@ -328,7 +305,6 @@ var reduceIframe = {
   {
       Services.prefs.removeObserver(pref_BlockRefresh, this);
       eraseRefresh.unregister();
-      dump("_dvk_dbg_, shutdown\n");
   },
 
   handleEvent: function( evt )
@@ -353,8 +329,6 @@ var reduceIframe = {
   }
 
 };
-
- dump("_dvk_dbg,\tcontent listing is loaded.\n");
 
    window.addEventListener("load", reduceIframe, false);
    window.addEventListener("unload", reduceIframe, false);

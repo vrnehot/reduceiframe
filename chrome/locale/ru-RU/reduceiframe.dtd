@@ -10,7 +10,3 @@
 <!ENTITY eraseIFrameCmd.accesskey  "У">
 <!ENTITY sandboxFrameCmd.label   "Открыть фрейм в песочнице">
 <!ENTITY sandboxFrameCmd.accesskey  "О">
-<!ENTITY eraseImage.label   "Удалить изображение">
-<!ENTITY eraseImage.accesskey  "У">
-<!ENTITY openLinkCmdInSandbox.label   "Открыть в песочнице">
-<!ENTITY openLinkCmdInSandbox.accesskey  "п">

@@ -183,7 +183,7 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
         frameShell.allowSubframes    = false;
         frameShell.allowJavascript   = false;
         frameShell.allowMetaRedirects= false;
-        thedocshell.allowPlugins     = false;
+        frameShell.allowPlugins     = false;
     }
     catch (e)
     {
@@ -293,6 +293,6 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
 function NSGetFactory(acid)
 {
     singleComponent.startup();
-    dump("_dvk_dbg_, call to NSGetFactory.\n");
+//    dump("_dvk_dbg_, call to NSGetFactory.\n");
     return(singleComponent);
 }
