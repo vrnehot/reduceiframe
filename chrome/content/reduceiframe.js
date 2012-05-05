@@ -1,4 +1,3 @@
-
 "use strict";
 //   Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 //   Components.utils.import("resource://gre/modules/Services.jsm");
@@ -110,8 +109,7 @@ menuReduceIframe.prototype = {
           var thedocshell = neowin.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
                .getInterface(Components.interfaces.nsIWebNavigation)
                .QueryInterface(Components.interfaces.nsIDocShell);
-               //   setSandbox :
-          thedocshell.allowSubframes    = false;
+               //   setSandbox : thedocshell.allowSubframes    = false;
           thedocshell.allowJavascript   = false;
           thedocshell.allowMetaRedirects= false;
           thedocshell.allowPlugins	= false;
