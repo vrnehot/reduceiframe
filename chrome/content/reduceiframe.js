@@ -1,11 +1,12 @@
+
 "use strict";
 //   Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 //   Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://reduceiframe/modules/utility.jsm");
+Components.utils.import("resource://reduceiframe/modules/refresh.jsm");
+//	Components.utils.import("resource://gre/modules/AddonManager.jsm");  
 
-     //nst LOAD_DOCUMENT_URI = Components.interfaces.nsIChannel.LOAD_DOCUMENT_URI
-const pref_BlockRefresh  = "accessibility.blockautorefresh"
-const pref_StrictSchema  = "extensions.reduceiframe.stopJScriptSchema"
+  //nst pref_StrictSchema  = "extensions.reduceiframe.stopJScriptSchema"
      //   nst CONSOLE_PREFERENCE = "extensions.reduceiframe.useConsole"
   //nst LOG_ALLOW_EVENT = "Javascript is allowed to run in further surfing. (event: '%s')"
   //nst LOG_DISALLOW  = "Javascript is disallowed for this page."
@@ -26,7 +27,7 @@ menuReduceIframe.prototype = {
   blank        : true,
   foronce      : true,
   strict       : false,
-  
+
   setFrame : function(aframe) // like second construct
   {
      this._frameurl = aframe.location.href;
@@ -109,7 +110,7 @@ menuReduceIframe.prototype = {
           var thedocshell = neowin.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
                .getInterface(Components.interfaces.nsIWebNavigation)
                .QueryInterface(Components.interfaces.nsIDocShell);
-               //   setSandbox : thedocshell.allowSubframes    = false;
+               //   setSandbox :thedocshell.allowSubframes    = false;
           thedocshell.allowJavascript   = false;
           thedocshell.allowMetaRedirects= false;
           thedocshell.allowPlugins	= false;
@@ -170,19 +171,22 @@ menuReduceIframe.prototype = {
   }
   
 }	//	end of menuReduceIframe
+//   FINISH OVERLAY CODE chrome://browser/content/browser.xul
 
-//	menuitem id="context-openlinksandbox" oncommand="reduceIframe.sandboxLink(gContextMenu);" 
+var reduceIframe = {
+  rdf_em_id : "reduceiframe@mozdev.org",
+  suspend   : false,
 
 //   var gContextMenu 	from browser.js
 //   menu id="frame" onpopupshowing="popReduceIframe(gContextMenu);" ...
-function popReduceIframe(aContextMenu) //  return gReduceIframe
-{     
+  popupshow: function(aContextMenu) //  return gReduceIframe
+  {     
      if(!(aContextMenu.target)) return null;
 // dump("_dvk_dbg_,\t"); dump(LOG_SIGNATURE); dump("\n");
      var thedoc = aContextMenu.target.ownerDocument;
      if(!thedoc) return null; //  found gContextMenu then target document
 
-     var thestrict = Services.prefs.getBoolPref(pref_StrictSchema);
+     var thestrict = Services.prefs.getBoolPref("extensions.reduceiframe.stopJScriptSchema");
      var theobj = new menuReduceIframe(thestrict);
           theobj.setFrame(thedoc); // main charge and return value
      var something = ((thedoc.documentURI.indexOf("about:") === 0) ? false : true) || (theobj.foronce);
@@ -215,93 +219,58 @@ function popReduceIframe(aContextMenu) //  return gReduceIframe
      if(!thetarget) document.getElementById("context-printframe").setAttribute("hidden", "true");
 
      return theobj;
-}
+  },
 
-//   FINISH OVERLAY CODE chrome://browser/content/browser.xul
-
-//   hereinafter, subsystem to erase the refresh position from http header, in re subdocument case.
-var eraseRefresh = {
-//   true when listen to "http-on-examine-response"
-    _boolLively : false,
-
-    httpResponse: function (achan)
-    {        
-	var thecode = 0;
-        var thewindow = null;
-        var thesource = null;
-        try {
-            thesource = achan.URI.spec;
-            var thecallbacks = achan.notificationCallbacks || achan.loadGroup.notificationCallbacks;
-            var thenRequestor = thecallbacks.QueryInterface(Components.interfaces.nsIInterfaceRequestor);
-            if(thenRequestor) thewindow = thenRequestor.getInterface(Components.interfaces.nsIDOMWindow);    
-            thecode = achan.responseStatus;
-	} catch (e) {}
-
-        if(!(thewindow)) return;   //   some filters
-        if((thecode < 200) || (400 < thecode)) return;
-//        if(!(achan.loadFlags & LOAD_DOCUMENT_URI)) return;
-        if(thewindow === thewindow.top) return; // needs sub document
-
-        try { //     main charge
-            if(achan.getResponseHeader("Refresh"))
-               achan.setResponseHeader("Refresh", null, false);
-            else thecode = 0;
-	} catch (e) { thecode = 0; }
-
-        if(thecode) utilityRIframe.report(thewindow, thesource, utilityRIframe.msgRefresh);
-
-        return;
-    },
-
-    observe: function(asubject, atopic, data)
-    {
-        if(asubject)
-        if(atopic === "http-on-examine-response")
-        {
-          var thechannel = asubject.QueryInterface(Components.interfaces.nsIHttpChannel);
-          if(thechannel) this.httpResponse(thechannel);
-        }
-    },
-
-    unregister: function()
-    {
-        if(this._boolLively)
-           Services.obs.removeObserver(this, "http-on-examine-response");
-        this._boolLively = false;
-    },
-
-    updateRegistery: function()
-    {
-        var thebool = Services.prefs.getBoolPref(pref_BlockRefresh);
-        if(thebool) Services.obs.addObserver(this, "http-on-examine-response", false);
-        else if(this._boolLively)
-               Services.obs.removeObserver(this, "http-on-examine-response");
-        this._boolLively = thebool;
-    }
-};
-
-var reduceIframe = {
-
+    //	resume \ suspend subsystem
+  onOperationCancelled: function(anaddon)
+  {
+      if(this.suspend && !(anaddon.userDisabled))
+      if(anaddon.id === this.rdf_em_id)
+      try {	//	.pendingOperations ?
+  //    dump("_dvk_dbg_, onOperationCancelled:\t"); dump(anaddon.id); dump("\n");
+	  this.startup();
+	  this.suspend = false;
+      }
+      catch (e)
+      {
+	  Components.utils.reportError(e)
+      }
+  },
+  
+    //	suspend \ resume subsystem
+  onDisabling: function(anaddon, aneeds)
+  {
+      if(anaddon.id === this.rdf_em_id)
+      if(aneeds)  // the pending operation is interested
+      try {
+	  this.shutdown(true);
+	  this.suspend = true;
+      }
+      catch (e)
+      {
+	  Components.utils.reportError(e)
+      }
+  },
+  
   startup: function() // Initialize the extension
   {
-      eraseRefresh.updateRegistery();
-      Services.prefs.addObserver(pref_BlockRefresh, this, false);
+      eraseRefresh.update();
+      Services.prefs.addObserver(eraseRefresh.preference, this, false);
+      if(!(this.suspend)) AddonManager.addAddonListener(this);
   },
 
   observe: function(asubject, atopic, adata)
   {
-      if(atopic == "nsPref:changed")
-      {
-	  if(adata == pref_BlockRefresh)
-	      eraseRefresh.updateRegistery();
-      }
+      if(atopic === "nsPref:changed")
+	  if(adata == eraseRefresh.preference)
+	      eraseRefresh.update();
 //	dump("_dvk_dbg_, subject:\t"); dump(asubject); dump("\n");
-//      if(atopic == "xul-overlay-merged")	
   },
 
-  shutdown: function()
+  shutdown: function(asuspend)
   {
-      Services.prefs.removeObserver(pref_BlockRefresh, this);
+      if(!asuspend) AddonManager.removeAddonListener(this);
+      Services.prefs.removeObserver(eraseRefresh.preference, this);
       eraseRefresh.unregister();
   },
 

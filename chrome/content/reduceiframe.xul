@@ -6,7 +6,7 @@
  
 <script src="chrome://reduceiframe/content/reduceiframe.js" type="application/javascript" />
 
- <menu id="frame" onpopupshowing="gReduceIframe = popReduceIframe(gContextMenu);"
+ <menu id="frame" onpopupshowing="gReduceIframe = reduceIframe.popupshow(gContextMenu);"
        onpopuphiding="gReduceIframe = null;" />
  
  <menuitem id="context-bookmarkframe"
