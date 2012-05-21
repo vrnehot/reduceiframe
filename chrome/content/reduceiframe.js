@@ -174,7 +174,7 @@ menuReduceIframe.prototype = {
 //   FINISH OVERLAY CODE chrome://browser/content/browser.xul
 
 var reduceIframe = {
-  rdf_em_id : "reduceiframe@mozdev.org",
+//  rdf_em_id : "reduceiframe@mozdev.org",
   suspend   : false,
 
 //   var gContextMenu 	from browser.js
@@ -225,7 +225,7 @@ var reduceIframe = {
   onOperationCancelled: function(anaddon)
   {
       if(this.suspend && !(anaddon.userDisabled))
-      if(anaddon.id === this.rdf_em_id)
+      if(anaddon.id === utilityRIframe.id)
       try {	//	.pendingOperations ?
   //    dump("_dvk_dbg_, onOperationCancelled:\t"); dump(anaddon.id); dump("\n");
 	  this.startup();
@@ -240,9 +240,9 @@ var reduceIframe = {
     //	suspend \ resume subsystem
   onDisabling: function(anaddon, aneeds)
   {
-      if(anaddon.id === this.rdf_em_id)
+      if(anaddon.id === utilityRIframe.id)
       if(aneeds)  // the pending operation is interested
-      try {
+      try {	
 	  this.shutdown(true);
 	  this.suspend = true;
       }
@@ -256,7 +256,7 @@ var reduceIframe = {
   {
       eraseRefresh.update();
       Services.prefs.addObserver(eraseRefresh.preference, this, false);
-      if(!(this.suspend)) AddonManager.addAddonListener(this);
+      AddonManager.addAddonListener(this);
   },
 
   observe: function(asubject, atopic, adata)

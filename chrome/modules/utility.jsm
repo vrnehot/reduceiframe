@@ -3,13 +3,15 @@ var EXPORTED_SYMBOLS = ["utilityRIframe"]
 
 Components.utils.import("resource://gre/modules/Services.jsm");
 
-const logSIGNATURE = "Subdocument content policy component."
+const logSIGNATURE  = "Subdocument content policy component."
 const logRefresh    = "The refresh position have been removed from the http header."
+const rdf_em_id     = "reduceiframe@mozdev.org"
 
 let utilityRIframe = {
   msgRefresh : logRefresh,
   SIGNATURE : logSIGNATURE,
-  
+  id        : rdf_em_id,
+
   report : function(awin, auri, areport, avalue)
   {
     awin = awin.top;

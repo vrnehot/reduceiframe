@@ -2,6 +2,7 @@
 "use strict";
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+Components.utils.import("resource://gre/modules/AddonManager.jsm");  
 //  Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://reduceiframe/modules/utility.jsm");
 
@@ -69,21 +70,54 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
  stopJScriptSchema: false,  // activates strict mode, indeed
  misplacedSchema: [ "ftp", "mailto", "news", "data" ], //  the data conflicts with dom-inspector ext.
 
- _boolConsole   : false,
- _requisites: [ "stopOnlyXSite", "stopOnlyIframe", "stopJScriptSchema" ], 
+ _suspend	: false,
+ _boolConsole	: false,
+ _requisites	: [ "stopOnlyXSite", "stopOnlyIframe", "stopJScriptSchema" ], 
  _branch: Components.classes["@mozilla.org/preferences-service;1"].
                 getService(Components.interfaces.nsIPrefService).
                 getBranch("extensions.reduceiframe."),
 
- startup: function()
+    //	resume \ suspend subsystem
+ onOperationCancelled: function(anaddon)
  {
-    this._branch.QueryInterface(Components.interfaces.nsIPrefBranch2);
+    if(this._suspend && !(anaddon.userDisabled))
+    if(anaddon.id === utilityRIframe.id)
+    try {	//	.pendingOperations ?
+	this.resume();
+	this._suspend = false;
+    }
+    catch (e)
+    {
+	Components.utils.reportError(e)
+    }
+ },
+ 
+    //	suspend \ resume subsystem
+ onDisabling: function(anaddon, aneeds)
+ {
+    if(anaddon.id === utilityRIframe.id)
+	if(aneeds)  // the pending operation is interested
+    {
+	this._branch.removeObserver("", this);
+	this._suspend = true;
+    }
+ },
+ 
+ resume: function()
+ {
     for each(let theval in this._requisites)
         this[theval] = this._branch.getBoolPref(theval);
     let theval  = "misplacedSchema";
     this[theval]= str2list(this._branch.getCharPref(theval));
     this._boolConsole = this._branch.getBoolPref("useConsole");
     this._branch.addObserver("", this, false);
+ },
+ 
+ startup: function()
+ {
+    this._branch.QueryInterface(Components.interfaces.nsIPrefBranch2);
+    this.resume();
+    AddonManager.addAddonListener(this);
  },
 
  QueryInterface: XPCOMUtils.generateQI(
@@ -112,7 +146,7 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
   shouldLoad : function(atype, auri, aRequestOrigin, aContext, aMimeGuess, aExtra) 
  {
     let result = LOAD_ACCEPT;
-
+    if(this._suspend) return result;
     if((atype != TYPE_SUBDOC) || (!aContext)) return result;
 
 //  find subdoc element and top document, as acknowledge of TYPE_SUBDOCUMENT
