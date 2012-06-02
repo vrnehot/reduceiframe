@@ -210,6 +210,7 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
     
     if(this.stopJScriptSchema) // strict mode
     try {
+//    dump("_dvk_dbg_, webNavigation:\t"); dump(thedoc.webNavigation); dump("\n\n"); // _dvk_dbg_
         var frameShell = thedoc.defaultView.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
                      .getInterface(Components.interfaces.nsIWebNavigation)
                      .QueryInterface(Components.interfaces.nsIDocShell);
