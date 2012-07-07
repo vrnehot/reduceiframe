@@ -53,13 +53,15 @@ var eraseRefresh = {
 
     unregister: function()
     {
-        Services.obs.removeObserver(this, "http-on-examine-response");
+        try {
+            Services.obs.removeObserver(this, "http-on-examine-response");
+        } catch (e) { }
     },
 
     update: function()
     {
         if(Services.prefs.getBoolPref(this.preference))
              Services.obs.addObserver(this, "http-on-examine-response", false);
-        else Services.obs.removeObserver(this, "http-on-examine-response");
+        else this.unregister();
     }
 }
