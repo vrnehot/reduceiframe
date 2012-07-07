@@ -38,6 +38,7 @@ menuReduceIframe.prototype = {
           this._frameurl = thevalue;
           this.foronce = true;
      }
+
      return this._frameurl;
   },
 
@@ -164,10 +165,12 @@ menuReduceIframe.prototype = {
           charset.data = "charset=" + adocOrg.characterSet;
      }
 
-     sa.AppendElement(wuri);
-     sa.AppendElement(charset);
-     //   sa.AppendElement(aReferrerURI); thedoc.referrer; ? documentURIObject
-     return Services.ww.openWindow(thewin, getBrowserURL(), null, "chrome,dialog=no,all", sa);
+    sa.AppendElement(wuri);
+    sa.AppendElement(charset);
+    //   sa.AppendElement(aReferrerURI); thedoc.referrer; ? documentURIObject
+    //	getBrowserURL(): "chrome://browser/content/browser.xul"
+     return Services.ww.openWindow(thewin, "chrome://browser/content/browser.xul",
+				  null, "chrome,dialog=no,all", sa);
   }
   
 }	//	end of menuReduceIframe
@@ -251,12 +254,40 @@ var reduceIframe = {
 	  Components.utils.reportError(e)
       }
   },
+
+  onMenushow: function (event)
+  {
+    const menu2script = {	//	overlay.css
+	    'false' : "menu-iconic stop-script",
+	    'true'  : "menu-iconic allow-script", }
   
+    if(gContextMenu)	// want only contentAreaContextMenu
+    if(gContextMenu.inFrame)
+    if(event.currentTarget === event.target)
+    try {
+//      dump("_dvk_dbg_, popupshowing.\n"); //	dump(thedoc.webNavigation); dump("\n\n");
+	var frameShell = gContextMenu.target.ownerDocument.defaultView;
+	frameShell = frameShell.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+		      .getInterface(Components.interfaces.nsIWebNavigation)
+		      .QueryInterface(Components.interfaces.nsIDocShell);
+  
+	document.getElementById("frame").setAttribute("class",
+		      menu2script[frameShell.canExecuteScripts]);
+    }
+    catch (e) {
+	Components.utils.reportError(e)
+    }
+  },
+
   startup: function() // Initialize the extension
   {
       eraseRefresh.update();
       Services.prefs.addObserver(eraseRefresh.preference, this, false);
       AddonManager.addAddonListener(this);
+      
+      let thelement = document.getElementById("contentAreaContextMenu");
+      thelement.addEventListener("popupshowing", this.onMenushow);
+      
   },
 
   observe: function(asubject, atopic, adata)

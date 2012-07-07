@@ -1,22 +1,21 @@
-/* This is just an example.  You shouldn't do this. */
+/* This is just an example.  You shouldn't do this. 
 #reduceiframe-hello
 {
   color: red ! important;
 }
+
 #reduceiframe-toolbar-button
 {
   list-style-image: url("chrome://reduceiframe/skin/toolbar-button.png");
   -moz-image-region: rect(0px 24px 24px 0px);
-}
-#reduceiframe-toolbar-button:hover
+} */
+
+menu.allow-script
 {
-  -moz-image-region: rect(24px 24px 48px  0px);
+  list-style-image: url("chrome://reduceiframe/skin/utility.png")
 }
-[iconsize="small"] #reduceiframe-toolbar-button
+
+menu.stop-script
 {
-  -moz-image-region: rect( 0px 40px 16px 24px);
-}
-[iconsize="small"] #reduceiframe-toolbar-button:hover
-{
-  -moz-image-region: rect(24px 40px 40px 24px);
+  list-style-image: url("chrome://reduceiframe/skin/disallow.png")
 }

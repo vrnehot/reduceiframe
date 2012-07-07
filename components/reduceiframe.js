@@ -15,8 +15,8 @@ const SECURITY_MANAGER = Components.interfaces.nsIScriptSecurityManager
 
 const LOG_SCHEMA  = "Misplaced schema is encountered. (%s)"
 const LOG_FIRSTIME= "Subdocument is canceled, target:"
-
-const	schemataGrata	= { 'about': 0, 'chrome': 1, 'resource': 2 } // 'javascript': 3 } 'file']
+    // 'javascript': 3 } 'file']
+const	schemataGrata	= { 'about': 0, 'chrome': 1, 'resource': 2, 'view-source': 3 }
 const   attrInfluence	= [ 'src', 'href', 'action' ] // facultative
 const	htmlStub = " &nbsp;from&nbsp;element&nbsp;&lt;{element}&gt;&sbquo; &nbsp;by&nbsp;attribute&nbsp;";
 const	signatureFriend = "printed by subdocument content policy component"; // concord with log and notify
@@ -174,7 +174,7 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
             return REJECT_REQUEST;
         }
 
-    if((thescheme) && (thescheme in schemataGrata)) return result;
+    if(thescheme in schemataGrata) return result;
 
     var thesame = false;
     if((this.stopOnlyXSite) && (thescheme != "javascript")) // check domains and host to equal

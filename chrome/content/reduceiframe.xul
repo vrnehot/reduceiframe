@@ -2,13 +2,14 @@
 <?xml-stylesheet href="chrome://reduceiframe/skin/overlay.css" type="text/css"?>
 <!DOCTYPE overlay SYSTEM "chrome://reduceiframe/locale/reduceiframe.dtd">
 
-<overlay id="reduceiframe-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
- 
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
 <script src="chrome://reduceiframe/content/reduceiframe.js" type="application/javascript" />
 
- <menu id="frame" onpopupshowing="gReduceIframe = reduceIframe.popupshow(gContextMenu);"
-       onpopuphiding="gReduceIframe = null;" />
- 
+ <menu id="frame" class="menu-iconic allow-script"
+       onpopupshowing="gReduceIframe = reduceIframe.popupshow(gContextMenu);"
+       onpopuphiding="gReduceIframe = null;"  />
+
  <menuitem id="context-bookmarkframe"
            oncommand="gReduceIframe.sandboxLink(gContextMenu);"
            label="&sandboxFrameCmd.label;" accesskey="&sandboxFrameCmd.accesskey;" />
