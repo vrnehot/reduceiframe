@@ -25,7 +25,8 @@ const   regexBiditrimX = /(^(:|\s)+)|((\s|:|\.)+$)/g; // apply bidirectional tri
 const   regexBiditrims = /(^\s+)|(\s+$)/g;
 const   regexNormhost = /(^\.+www\.)|(^\.+)/g;     // some dot 2 one dot
 
-//  in: preference from "misplacedSchema", out: protocol folder
+//  in: preference from "misplacedSchema" or "communitySites",
+//	out: protocol folder
 function str2list(alist)
 {
     let result = [];
@@ -69,7 +70,8 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
  stopOnlyIframe : false,    // extensions.reduceiframe.stopOnlyIframe
  stopJScriptSchema: false,  // activates strict mode, indeed
  misplacedSchema: [ "ftp", "mailto", "news", "data" ], //  the data conflicts with dom-inspector ext.
-
+ communitySites : [ ".google.com", ".disqus.com", ".facebook.com", ".twitter.com", ".vk.com" ],
+ 
  _suspend	: false,
  _boolConsole	: false,
  _requisites	: [ "stopOnlyXSite", "stopOnlyIframe", "stopJScriptSchema" ], 
@@ -107,8 +109,12 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
  {
     for each(let theval in this._requisites)
         this[theval] = this._branch.getBoolPref(theval);
+
     let theval  = "misplacedSchema";
     this[theval]= str2list(this._branch.getCharPref(theval));
+	theval  = "communitySites";
+    this[theval]= str2list(this._branch.getCharPref(theval));
+
     this._boolConsole = this._branch.getBoolPref("useConsole");
     this._branch.addObserver("", this, false);
  },
@@ -153,8 +159,8 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
 
     var thesource = null; // target uri
     var thescheme = null; // protocol
-    var thetop = null;   // outer doc
-    var	thedoc = null;   // inner doc
+    var thetop = null;    // outer doc
+    var	thedoc = null;    // inner doc
 
     try {
         thesource = auri.spec;
@@ -166,7 +172,7 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
     if((!thetop) || (!thedoc)) return result;	// out of context
     if(thetop.loadOverlay) return result;	// xul document
     
-//	first step, filter protocol
+    //	first step, filter protocol
     for each (let theval in this.misplacedSchema)
         if(thescheme === theval)
         {
@@ -176,19 +182,33 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
 
     if(thescheme in schemataGrata) return result;
 
-    var thesame = false;
-    if((this.stopOnlyXSite) && (thescheme != "javascript")) // check domains and host to equal
+    var thesame = false; // check domains and host to equal
+    if((this.stopOnlyXSite) && (thescheme != "javascript"))
     try {
+	var isSuffix = function(ahost, asuffix)
+	    {
+		if(!(asuffix.length > ahost.length))
+		{
+		    let index = ahost.lastIndexOf(asuffix) + asuffix.length;
+		    return (ahost.length == index);
+		}
+		return false;
+	    }
+
 	if((thetop.domain) && ("host" in auri))
 	{
-	    var suffix	= hostAsFirstDot(thetop.domain);
+	    let suffix	= hostAsFirstDot(thetop.domain);
 	    var thehost = (auri.host || "").toLowerCase();
 		thehost = "." + thehost.replace(regexBiditrimX, "");
-	    if(suffix && !(suffix.length > thehost.length))
-	    {
-		var index = thehost.lastIndexOf(suffix) + suffix.length;
-		thesame = (thehost.length == index);
-	    }
+	    if(suffix) thesame = isSuffix(thehost, suffix);
+
+	    if(!thesame)
+	    for each (let suffix in this.communitySites)
+		if(isSuffix(thehost, suffix))
+		{
+		    thesame = true;
+		    break;
+		}
 	}
 	else
 	try {
@@ -301,9 +321,10 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
     try {
     switch (adata)
     {
-    case "misplacedSchema" :
-        var theval = str2list(this._branch.getCharPref(adata));
-        this.misplacedSchema = theval;
+    case "misplacedSchema":
+    case "communitySites" :
+        var theval  = this._branch.getCharPref(adata);
+        this[adata] = str2list(theval);
     break;
 
     case "useConsole" :

@@ -2,13 +2,13 @@
 <RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
       <em:id>reduceiframe@mozdev.org</em:id>
-      <em:version>0.1.6</em:version>
+      <em:version>0.1.7</em:version>
 
 		<em:localized>
 		  <Description>
 			<em:locale>ru-RU</em:locale>
 			<em:name>reduce IFrame</em:name>
-			<em:description>Это расширение накладывет ряд ограничений на елементы позволяющие встраивать документы друг в друга.</em:description>
+<em:description>Это расширение накладывет ряд ограничений на елементы позволяющие встраивать документы друг в друга.</em:description>
 			<em:creator>&lt;kannoner@gmail.com&gt;</em:creator>
 			<em:homepageURL>https://code.google.com/p/reduceiframe/</em:homepageURL>
 		  </Description>
@@ -31,7 +31,7 @@
            <Description>
                 <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
                 <em:minVersion>6.*</em:minVersion>
-                <em:maxVersion>13.*</em:maxVersion>
+                <em:maxVersion>14.*</em:maxVersion>
            </Description>
         </em:targetApplication>
 

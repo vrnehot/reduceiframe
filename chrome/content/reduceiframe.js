@@ -260,7 +260,7 @@ var reduceIframe = {
     const menu2script = {	//	overlay.css
 	    'false' : "menu-iconic stop-script",
 	    'true'  : "menu-iconic allow-script", }
-  
+
     if(gContextMenu)	// want only contentAreaContextMenu
     if(gContextMenu.inFrame)
     if(event.currentTarget === event.target)
@@ -284,10 +284,10 @@ var reduceIframe = {
       eraseRefresh.update();
       Services.prefs.addObserver(eraseRefresh.preference, this, false);
       AddonManager.addAddonListener(this);
-      
+
       let thelement = document.getElementById("contentAreaContextMenu");
       thelement.addEventListener("popupshowing", this.onMenushow);
-      
+
   },
 
   observe: function(asubject, atopic, adata)
