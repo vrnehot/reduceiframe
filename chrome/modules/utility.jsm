@@ -7,7 +7,7 @@ const logSIGNATURE  = "Subdocument content policy component."
 const logRefresh    = "The refresh position have been removed from the http header."
 const rdf_em_id     = "reduceiframe@mozdev.org"
 
-let utilityRIframe = {
+var utilityRIframe = {
   msgRefresh : logRefresh,
   SIGNATURE : logSIGNATURE,
   id        : rdf_em_id,

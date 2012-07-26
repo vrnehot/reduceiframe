@@ -1,11 +1,10 @@
 <!ENTITY setitle.stopNotify "Don't notify me when policy takes effect:">
 <!ENTITY tooltiptext.stopNotify "behavior of user interface">
-<!ENTITY tooltiptext.lessRestrict "less restrictions">
 <!ENTITY setitle.stopOnlyIframe "Only iframe elements will be rejected:">
 <!ENTITY setitle.stopOnlyXSite "It stops only cross-site conversion:">
 <!ENTITY tooltiptext.stopOnlyXSite "This is recommended for mail client or community net.">
-<!ENTITY setitle.stopJScriptSchema "It stops always javascript">
-<!ENTITY setdesc.tailstopJScript "this means more restrictions vice-versa the above options that can lift them.">
+<!ENTITY setitle.stopOnlyJavaScript "It stops only javascript:">
+<!ENTITY setdesc.stopOnlyJavaScript "you can cancel this restriction back by reloading a subframe.">
 <!ENTITY eraseIFrameCmd.label   "Erase IFRAME">
 <!ENTITY eraseIFrameCmd.accesskey  "E">
 <!ENTITY sandboxFrameCmd.label   "Open Frame in Sandbox">

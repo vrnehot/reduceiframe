@@ -67,14 +67,15 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
  category	: "content-policy",
 
  stopOnlyXSite  : false,
- stopOnlyIframe : false,    // extensions.reduceiframe.stopOnlyIframe
- stopJScriptSchema: false,  // activates strict mode, indeed
+ stopOnlyIframe : false,	// extensions.reduceiframe.stopOnlyIframe
+ stopJScriptSchema : false,
+ stopOnlyJavaScript: false,  // for once
  misplacedSchema: [ "ftp", "mailto", "news", "data" ], //  the data conflicts with dom-inspector ext.
- communitySites : [ ".google.com", ".disqus.com", ".facebook.com", ".twitter.com", ".vk.com" ],
- 
+ communitySites : [ ".google.com", ".disqus.com", ".facebook.com", ".livejournal.com", ".twitter.com", ".vk.com" ],
+
  _suspend	: false,
  _boolConsole	: false,
- _requisites	: [ "stopOnlyXSite", "stopOnlyIframe", "stopJScriptSchema" ], 
+ _requisites	: [ "stopOnlyXSite", "stopOnlyIframe", "stopOnlyJavaScript" ], 
  _branch: Components.classes["@mozilla.org/preferences-service;1"].
                 getService(Components.interfaces.nsIPrefService).
                 getBranch("extensions.reduceiframe."),
@@ -151,7 +152,7 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
 
   shouldLoad : function(atype, auri, aRequestOrigin, aContext, aMimeGuess, aExtra) 
  {
-    let result = LOAD_ACCEPT;
+    var result = LOAD_ACCEPT;
     if(this._suspend) return result;
     if((atype != TYPE_SUBDOC) || (!aContext)) return result;
 
@@ -227,18 +228,18 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
 
     var thagName = (aContext.tagName || "").toUpperCase();
     if((this.stopOnlyIframe) && (thagName != "IFRAME")) return result;
-    
-    if(this.stopJScriptSchema) // strict mode
-    try {
-//    dump("_dvk_dbg_, webNavigation:\t"); dump(thedoc.webNavigation); dump("\n\n"); // _dvk_dbg_
-        var frameShell = thedoc.defaultView.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
-                     .getInterface(Components.interfaces.nsIWebNavigation)
-                     .QueryInterface(Components.interfaces.nsIDocShell);
 
-        frameShell.allowSubframes    = false;
-        frameShell.allowJavascript   = false;
-        frameShell.allowMetaRedirects= false;
-        frameShell.allowPlugins     = false;
+    //	next step, filter aims to first time
+    if(thedoc.documentURI == "about:blank")
+    if(this.stopOnlyJavaScript)
+    try {
+//    dump("_dvk_dbg_, stopOnlyJavaScript:\n");	dump(thesource); dump("\n");
+        let frameShell = thedoc.defaultView.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+                    .getInterface(Components.interfaces.nsIWebNavigation)
+                    .QueryInterface(Components.interfaces.nsIDocShell);
+        frameShell.allowPlugins = false;
+        frameShell.allowMetaRedirects = false;
+        frameShell.allowJavascript = false;
     }
     catch (e)
     {
@@ -246,14 +247,25 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
         Components.utils.reportError(e) //  this._boolConsole
     }
     else
-        if(thescheme === "javascript") return result; //    less safe
-//    else	if((thescheme === "javascript") || (thescheme === "data"))
-	
-//	next step, filter aims to first time
-    if(utilityRIframe.verify(thedoc, thesource))
-	return result; // cruise mode
-    else
+    if(!utilityRIframe.verify(thedoc, thesource))
 	result = REJECT_REQUEST; //	main charge
+
+    if(result === LOAD_ACCEPT)
+    {
+	if(thedoc.documentURI != "about:blank")
+	if(this.stopOnlyJavaScript)
+	try {
+	    let frameShell = thedoc.defaultView.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+			.getInterface(Components.interfaces.nsIWebNavigation)
+			.QueryInterface(Components.interfaces.nsIDocShell);
+	    frameShell.allowJavascript = true;
+	    frameShell.allowMetaRedirects = true;
+	    frameShell.allowPlugins = true;
+	}
+	catch (e) { }
+
+	return result; // cruise mode
+    }
 
     if(this._boolConsole)
     try {
@@ -294,8 +306,7 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
                        }
 	    thinner += "&nbsp;&middot;";
 	}
-//    dump("_dvk_dbg_, stub content already exist.\n");
-//    dump(thinner); dump("\n");
+//    dump("_dvk_dbg_, stub content already exist.\n"); dump(thinner); dump("\n");
 	thedoc.body.innerHTML = thinner;
 
     }
@@ -332,7 +343,7 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
     break;
 
     default:
-        if((adata.indexOf("stop") == 0) && (adata in this))
+        if((adata.indexOf("stopOnly") === 0) && (adata in this))
         this[adata] = this._branch.getBoolPref(adata);
     }
     } catch (e) {

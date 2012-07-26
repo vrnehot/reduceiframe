@@ -16,17 +16,13 @@ var gReduceIframe = null; // extra for gContextMenu from nsContextMenu
 //   START OVERLAY CODE chrome://browser/content/browser.xul
 
 //   extra of gContextMenu of nsContextMenu.js
-function menuReduceIframe(astrict, anurl)
-{
-    this.strict = astrict
-    if(anurl) this._frameurl = anurl;
-} //   prototype see below
+function menuReduceIframe()
+  {	} //   prototype see below
 
 menuReduceIframe.prototype = {
   _frameurl    : "about:blank",
   blank        : true,
   foronce      : true,
-  strict       : false,
 
   setFrame : function(aframe) // like second construct
   {
@@ -45,7 +41,6 @@ menuReduceIframe.prototype = {
 //   oncommand="gReduceIframe.doCmd(gContextMenu, 'openFrame');"/>
   openFrame : function(aContextMenu)
   {
-     if(this.strict) return false;
      if(this.foronce)
      try {
           this._openIntroFrame(aContextMenu.target.ownerDocument, "window");
@@ -60,7 +55,6 @@ menuReduceIframe.prototype = {
 //   oncommand="gReduceIframe.doCmd(gContextMenu, 'openFrameInTab');"/>
   openFrameInTab : function(aContextMenu)
   {
-     if(this.strict) return false;
      if(this.foronce)
      try {
           urlSecurityCheck( this._frameurl,
@@ -189,19 +183,15 @@ var reduceIframe = {
      var thedoc = aContextMenu.target.ownerDocument;
      if(!thedoc) return null; //  found gContextMenu then target document
 
-     var thestrict = Services.prefs.getBoolPref("extensions.reduceiframe.stopJScriptSchema");
-     var theobj = new menuReduceIframe(thestrict);
+     var theobj = new menuReduceIframe();
           theobj.setFrame(thedoc); // main charge and return value
      var something = ((thedoc.documentURI.indexOf("about:") === 0) ? false : true) || (theobj.foronce);
-
+  //	_dvk_dbg_
      document.getElementById("context-viewframesource").setAttribute("disabled", theobj.blank);
      document.getElementById("context-saveframe").setAttribute("disabled", theobj.blank);
      document.getElementById("context-viewframeinfo").setAttribute("disabled", theobj.blank);
-
-     document.getElementById("context-openframeintab").setAttribute("hidden", thestrict);
-     document.getElementById("context-openframe").setAttribute("hidden", thestrict);
-     if(!thestrict) document.getElementById("context-openframeintab").setAttribute("disabled", !(something));
-     if(!thestrict) document.getElementById("context-openframe").setAttribute("disabled", !(something));
+     document.getElementById("context-openframeintab").setAttribute("disabled", !(something));
+     document.getElementById("context-openframe").setAttribute("disabled", !(something));
 
      // context-bookmarkframe is open in sandbox
      var thesandbox = document.getElementById("context-bookmarkframe");
