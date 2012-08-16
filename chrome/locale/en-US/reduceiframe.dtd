@@ -1,5 +1,5 @@
-<!ENTITY setitle.stopNotify "Don't notify me when policy takes effect:">
-<!ENTITY tooltiptext.stopNotify "behavior of user interface">
+<!ENTITY setitle.menuSandbox "Open Frame in Sandbox instead of New Window:">
+<!ENTITY tooltiptext.contextMenu "for the context menu of a frame.">
 <!ENTITY setitle.stopOnlyIframe "Only iframe elements will be rejected:">
 <!ENTITY setitle.stopOnlyXSite "It stops only cross-site conversion:">
 <!ENTITY tooltiptext.stopOnlyXSite "This is recommended for mail client or community net.">
@@ -9,3 +9,12 @@
 <!ENTITY eraseIFrameCmd.accesskey  "E">
 <!ENTITY sandboxFrameCmd.label   "Open Frame in Sandbox">
 <!ENTITY sandboxFrameCmd.accesskey  "O">
+<!ENTITY dlg.title "White List of Domains">
+<!ENTITY whitelistFrameCmd.label   "White List...">
+<!ENTITY whitelistFrameCmd.accesskey  "L">
+<!ENTITY btnApply.label "Apply">
+<!ENTITY btnApply.accesskey "A">
+<!ENTITY tooltiptext.textbox "source frame url">
+<!ENTITY tooltiptext.button "take effect with previous item">
+<!ENTITY setitle.userInterface  "User Interface:">
+<!ENTITY setitle.contentPolicy  "Content Policy Rules:">

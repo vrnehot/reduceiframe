@@ -1,4 +1,3 @@
-
 "use strict";
 //   Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 //   Components.utils.import("resource://gre/modules/Services.jsm");
@@ -20,9 +19,10 @@ function menuReduceIframe()
   {	} //   prototype see below
 
 menuReduceIframe.prototype = {
-  _frameurl    : "about:blank",
-  blank        : true,
-  foronce      : true,
+  _frameurl	: "about:blank",
+  blank		: true,
+  foronce	: true,
+  sandbox	: false,
 
   setFrame : function(aframe) // like second construct
   {
@@ -38,18 +38,27 @@ menuReduceIframe.prototype = {
      return this._frameurl;
   },
 
+  getVirtualUrl : function(adoc)
+  {
+     if(this.foronce) return this._frameurl
+      else return adoc.domain;
+  },
+
 //   oncommand="gReduceIframe.doCmd(gContextMenu, 'openFrame');"/>
   openFrame : function(aContextMenu)
   {
-     if(this.foronce)
-     try {
-          this._openIntroFrame(aContextMenu.target.ownerDocument, "window");
-     }
-     catch (e) {
-          Components.utils.reportError(e)
-     }
-     else return true;
-     return false;
+    var retval = false;	// stop propagate
+    try {
+	if(this.sandbox) this.sandboxLink(aContextMenu)
+	else
+	  if(this.foronce)
+	      this._openIntroFrame(aContextMenu.target.ownerDocument, "window");
+	  else retval = true;
+    }
+    catch (e) {
+        Components.utils.reportError(e)
+    }
+    return retval;
   },
 
 //   oncommand="gReduceIframe.doCmd(gContextMenu, 'openFrameInTab');"/>
@@ -68,7 +77,7 @@ menuReduceIframe.prototype = {
      else return true;
      return false;
   },
-  
+
   doCmd : function(anobj, aperand)
   {
      if(aperand === "doCmd") return;
@@ -82,37 +91,33 @@ menuReduceIframe.prototype = {
 //   oncommand="gReduceIframe.doCmd(gContextMenu, 'showOnlyThisFrame');"
   showOnlyThisFrame : function (aContextMenu)
   {
-     let result = true;
-     var thebrowser = aContextMenu.browser;
-     if(thebrowser)
-     try {
+      let result = true;
+      var thebrowser = aContextMenu.browser;
+      if(thebrowser)
+      try {
           urlSecurityCheck( this._frameurl,
                            thebrowser.contentPrincipal,
                            Components.interfaces.nsIScriptSecurityManager.DISALLOW_SCRIPT );
           result = false;
           thebrowser.loadURI(this._frameurl, null); // main charge
-     }
-     catch (e) {
-          Components.utils.reportError(e)
-     }
-     return result;
+      }
+      catch (e) {
+	   Components.utils.reportError(e)
+      }
+      return result;
   },
 
 //	id="context-bookmarkframe" oncommand="gReduceIframe.sandboxLink(gContextMenu);"
-  sandboxLink : function (aContextMenu) {
-     try {
-          var neowin = this._openExtraFrame(aContextMenu.target.ownerDocument);
-          var thedocshell = neowin.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
-               .getInterface(Components.interfaces.nsIWebNavigation)
-               .QueryInterface(Components.interfaces.nsIDocShell);
-               //   setSandbox :thedocshell.allowSubframes    = false;
-          thedocshell.allowJavascript   = false;
-          thedocshell.allowMetaRedirects= false;
-          thedocshell.allowPlugins	= false;
-     }
-     catch (e) {
-          Components.utils.reportError(e)
-     }
+  sandboxLink : function (aContextMenu)
+  {
+      var neowin = this._openExtraFrame(aContextMenu.target.ownerDocument);
+      var thedocshell = neowin.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+	   .getInterface(Components.interfaces.nsIWebNavigation)
+	   .QueryInterface(Components.interfaces.nsIDocShell);
+	   //   setSandbox :thedocshell.allowSubframes    = false;
+      thedocshell.allowJavascript   = false;
+      thedocshell.allowMetaRedirects= false;
+      thedocshell.allowPlugins	= false;
   },
   
 //  oncommand="gReduceIframe.reloadFrame(gContextMenu.target.ownerDocument);"
@@ -163,8 +168,7 @@ menuReduceIframe.prototype = {
     sa.AppendElement(charset);
     //   sa.AppendElement(aReferrerURI); thedoc.referrer; ? documentURIObject
     //	getBrowserURL(): "chrome://browser/content/browser.xul"
-     return Services.ww.openWindow(thewin, "chrome://browser/content/browser.xul",
-				  null, "chrome,dialog=no,all", sa);
+     return Services.ww.openWindow(thewin, getBrowserURL(), null, "chrome,dialog=no,all", sa);
   }
   
 }	//	end of menuReduceIframe
@@ -172,7 +176,34 @@ menuReduceIframe.prototype = {
 
 var reduceIframe = {
 //  rdf_em_id : "reduceiframe@mozdev.org",
-  suspend   : false,
+  suspend: false,
+  dlg	 : null,
+
+  //menuitem id="context-bookmarkframe" value="chrome://reduceiframe/content/dlg.xul"
+  openDlg: function(amenuitem, adoc)
+  {
+    if(this.dlg)
+      if(this.dlg.closed)
+	  this.dlg = null;
+
+    let thurl = adoc.domain;
+    if(gReduceIframe) thurl = gReduceIframe.getVirtualUrl(adoc);
+      thurl = thurl.replace(/(#|\?).*$/, "").toLowerCase(); // cut hash and query
+  
+    if(this.dlg)
+    {
+      this.dlg.setHeaderHint(thurl);
+      this.dlg.focus();
+    }
+    else {
+	  let thename = amenuitem.label + Date.now();
+	  this.dlg = window.openDialog(amenuitem.value, thename,
+		      "chrome,titlebar,centerscreen,dependent,resizable,close",
+		      thurl );
+
+	  this.dlg.addEventListener("close", this);
+    }
+  },
 
 //   var gContextMenu 	from browser.js
 //   menu id="frame" onpopupshowing="popReduceIframe(gContextMenu);" ...
@@ -186,22 +217,31 @@ var reduceIframe = {
      var theobj = new menuReduceIframe();
           theobj.setFrame(thedoc); // main charge and return value
      var something = ((thedoc.documentURI.indexOf("about:") === 0) ? false : true) || (theobj.foronce);
-  //	_dvk_dbg_
-     document.getElementById("context-viewframesource").setAttribute("disabled", theobj.blank);
-     document.getElementById("context-saveframe").setAttribute("disabled", theobj.blank);
-     document.getElementById("context-viewframeinfo").setAttribute("disabled", theobj.blank);
-     document.getElementById("context-openframeintab").setAttribute("disabled", !(something));
-     document.getElementById("context-openframe").setAttribute("disabled", !(something));
 
-     // context-bookmarkframe is open in sandbox
-     var thesandbox = document.getElementById("context-bookmarkframe");
-     var thefirst = document.getElementById("context-showonlythisframe");
-     if(thesandbox && thefirst)
      try {
-          thesandbox.setAttribute("disabled", !(something));
-          thefirst.parentNode.insertBefore(thesandbox, thefirst.nextSibling);
+      document.getElementById("context-viewframesource").setAttribute("disabled", theobj.blank);
+      document.getElementById("context-saveframe").setAttribute("disabled", theobj.blank);
+      document.getElementById("context-viewframeinfo").setAttribute("disabled", theobj.blank);
+      document.getElementById("context-openframeintab").setAttribute("disabled", !(something));
+      document.getElementById("context-openframe").setAttribute("disabled", !(something));
+      let theval = Services.prefs.getBoolPref("extensions.reduceiframe.stopOnlyXSite");
+      document.getElementById("context-bookmarkframe").setAttribute("disabled", !(theval));
      } catch(e) { }
-     
+
+     try {	// New Window <-> Sandbox
+	var index = Services.prefs.getIntPref("extensions.reduceiframe.menuSandbox");
+	  if(index) {
+	    theobj.sandbox = true;
+	    index = 1;
+	  }
+	let thenode = document.getElementById("context-openframe");
+
+	let theval = JSON.parse(thenode.getAttribute("value"));
+	  thenode.setAttribute("label", theval[index]);
+	  theval = JSON.parse(thenode.getAttribute("alter"));
+	  thenode.setAttribute("accesskey", theval[index]);
+     } catch(e) { }
+    
      // context-printframe is remove frame (possible only iframe)
      //   if(thetarget.tagName.toUpperCase() == "IFRAME")
      var thetarget = thedoc.defaultView.frameElement;
@@ -214,6 +254,7 @@ var reduceIframe = {
      return theobj;
   },
 
+  
     //	resume \ suspend subsystem
   onOperationCancelled: function(anaddon)
   {
@@ -269,10 +310,16 @@ var reduceIframe = {
     }
   },
 
+  //	for .utils.getWeakReference(
+  QueryInterface: XPCOMUtils.generateQI([
+                        Components.interfaces.nsISupports,
+                        Components.interfaces.nsIObserver,
+                        Components.interfaces.nsISupportsWeakReference   ]),
+
   startup: function() // Initialize the extension
   {
       eraseRefresh.update();
-      Services.prefs.addObserver(eraseRefresh.preference, this, false);
+      Services.prefs.addObserver(eraseRefresh.preference, this, true);
       AddonManager.addAddonListener(this);
 
       let thelement = document.getElementById("contentAreaContextMenu");
@@ -285,7 +332,6 @@ var reduceIframe = {
       if(atopic === "nsPref:changed")
 	  if(adata == eraseRefresh.preference)
 	      eraseRefresh.update();
-//	dump("_dvk_dbg_, subject:\t"); dump(asubject); dump("\n");
   },
 
   shutdown: function(asuspend)
@@ -297,23 +343,14 @@ var reduceIframe = {
 
   handleEvent: function( evt )
   {
-      if(evt.type == "DOMContentLoaded")
-      {
-        return;
-      }
         // load/unload the extension
-      window.removeEventListener(evt.type, this, false);
+      evt.currentTarget.removeEventListener(evt.type, this, false);
 
-      if (evt.type == "load")
-      {
-        this.startup();
-//            window.addEventListener("DOMContentLoaded", this, true);
-      }
+      if (evt.type == "load") this.startup()
       else
-      {
-//            window.addEventListener("DOMContentLoaded", this, true);
-        this.shutdown();
-      }
+	if (evt.type == "close") this.dlg = null
+	  else this.shutdown();
+
   }
 
 };

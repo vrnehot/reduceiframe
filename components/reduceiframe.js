@@ -1,4 +1,3 @@
-
 "use strict";
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
@@ -21,7 +20,7 @@ const   attrInfluence	= [ 'src', 'href', 'action' ] // facultative
 const	htmlStub = " &nbsp;from&nbsp;element&nbsp;&lt;{element}&gt;&sbquo; &nbsp;by&nbsp;attribute&nbsp;";
 const	signatureFriend = "printed by subdocument content policy component"; // concord with log and notify
 //	a document contained within another document
-const   regexBiditrimX = /(^(:|\s)+)|((\s|:|\.)+$)/g; // apply bidirectional trim:
+const   regexBiditrimX = /(^(@|:|\s)+)|((@|\s|:|\.)+$)/g; // apply bidirectional trim:
 const   regexBiditrims = /(^\s+)|(\s+$)/g;
 const   regexNormhost = /(^\.+www\.)|(^\.+)/g;     // some dot 2 one dot
 
@@ -68,10 +67,9 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
 
  stopOnlyXSite  : false,
  stopOnlyIframe : false,	// extensions.reduceiframe.stopOnlyIframe
- stopJScriptSchema : false,
- stopOnlyJavaScript: false,  // for once
+ stopOnlyJavaScript: false,
  misplacedSchema: [ "ftp", "mailto", "news", "data" ], //  the data conflicts with dom-inspector ext.
- communitySites : [ ".google.com", ".disqus.com", ".facebook.com", ".livejournal.com", ".twitter.com", ".vk.com" ],
+ communitySites : [ ".google.com", ".facebook.com", ".livejournal.com", ".twitter.com", ".vk.com" ],
 
  _suspend	: false,
  _boolConsole	: false,
@@ -117,7 +115,7 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
     this[theval]= str2list(this._branch.getCharPref(theval));
 
     this._boolConsole = this._branch.getBoolPref("useConsole");
-    this._branch.addObserver("", this, false);
+    this._branch.addObserver("", this, true);
  },
  
  startup: function()
@@ -129,6 +127,8 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
 
  QueryInterface: XPCOMUtils.generateQI(
             [   Components.interfaces.nsIContentPolicy,
+		Components.interfaces.nsIObserver,
+		Components.interfaces.nsISupportsWeakReference,
 		Components.interfaces.nsIFactory,
                 Components.interfaces.nsISupports ]),
 
@@ -330,6 +330,7 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
  {
     if(atopic == "nsPref:changed")
     try {
+//	dump("_dvk_dbg_, component observe:\t"); dump(adata); dump("\n");
     switch (adata)
     {
     case "misplacedSchema":
@@ -344,7 +345,7 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
 
     default:
         if((adata.indexOf("stopOnly") === 0) && (adata in this))
-        this[adata] = this._branch.getBoolPref(adata);
+	    this[adata] = this._branch.getBoolPref(adata);
     }
     } catch (e) {
         Components.utils.reportError(e)

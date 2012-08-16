@@ -1,0 +1,22 @@
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+prefpane {
+  padding-bottom: 1px;
+  -moz-padding-start: 1ex;
+  -moz-padding-end: 1ex;
+}
+
+.prefWindow-dlgbuttons {
+  padding-bottom: 0;
+  -moz-padding-end: 0;
+  -moz-margin-end: 0;
+}
+
+.dialog-button {
+  margin-top: 3px;
+  margin-bottom: 4px;
+}
+
+.resizer:hover {
+  background-color: ActiveBorder;
+}

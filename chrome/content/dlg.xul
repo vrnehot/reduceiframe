@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://reduceiframe/skin/dlg.css"?>
+
+<!DOCTYPE prefwindow SYSTEM "chrome://reduceiframe/locale/reduceiframe.dtd">
+
+<prefwindow xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	id="pref-dlg" title="&dlg.title;" type="prefwindow" minheight="222px"
+        onbeforeaccept="front2back('front-list', 'back-list');"
+        onload="back2front('back-list', 'front-list');"
+        buttons="accept, cancel, extra1" buttonlabelextra1="&btnApply.label;"
+        buttonaccesskeyextra1="&btnApply.accesskey;" >
+
+<script src="chrome://reduceiframe/content/dlg.js" type="application/javascript" />
+
+<prefpane flex="1">
+  <preferences>
+    <preference id="pref-list" name="extensions.reduceiframe.communitySites" type="string" />
+  </preferences>
+  <textbox id="hint-domain" hidden="true" multiline="false" 
+           readonly="true" tooltiptext="&tooltiptext.textbox;" />
+  <textbox id="back-list" hidden="true" preference="pref-list" multiline="true" autofocus="true" />
+  <textbox id="front-list" hidden="false" wrap="off" multiline="true" flex="1" />
+</prefpane>
+
+<hbox id="resizer-box" class="resizer" >
+    <resizer dir="bottomright" type="window" />
+</hbox>
+
+<script type="application/javascript">
+
+  let thedlg = document.getElementById("pref-dlg");
+        thedlg.getButton("extra1").setAttribute("disabled", "true");
+        let thebox = document.getElementById("resizer-box");
+        thedlg.getButton("accept").parentNode.appendChild(thebox);
+
+  if(window.arguments)
+  if(window.arguments.length)
+  {
+    document.getElementById("hint-domain").removeAttribute("hidden");
+    setHeaderHint(window.arguments[0]);
+  }
+</script>
+
+</prefwindow>

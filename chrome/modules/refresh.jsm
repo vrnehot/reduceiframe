@@ -4,6 +4,8 @@
 var EXPORTED_SYMBOLS = ["eraseRefresh"]
 
 Components.utils.import("resource://gre/modules/Services.jsm")
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm")
+
 Components.utils.import("resource://reduceiframe/modules/utility.jsm");
 //nst LOAD_DOCUMENT_URI = Components.interfaces.nsIChannel.LOAD_DOCUMENT_URI
 //  pref_BlockRefresh  = "accessibility.blockautorefresh"
@@ -12,8 +14,16 @@ Components.utils.import("resource://reduceiframe/modules/utility.jsm");
 var eraseRefresh = {
 //    _boolLively : false,
     preference  : "accessibility.blockautorefresh",
+
+    //	for .utils.getWeakReference(
+    QueryInterface: XPCOMUtils.generateQI([
+                        Components.interfaces.nsISupports,
+                        Components.interfaces.nsIObserver,
+                        Components.interfaces.nsISupportsWeakReference   ]),
+
     httpResponse: function (achan)
-    {        
+    {
+//    dump("_dvk_dbg_, module:    http-on-examine-response.\n");
 	var thecode = 0;
         var thewindow = null;
         var thesource = null;
@@ -61,7 +71,7 @@ var eraseRefresh = {
     update: function()
     {
         if(Services.prefs.getBoolPref(this.preference))
-             Services.obs.addObserver(this, "http-on-examine-response", false);
+            Services.obs.addObserver(this, "http-on-examine-response", true);
         else this.unregister();
     }
 }
