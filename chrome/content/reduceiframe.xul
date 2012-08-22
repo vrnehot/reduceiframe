@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet href="chrome://reduceiframe/skin/overlay.css" type="text/css"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 
 <!DOCTYPE overlay [
 <!ENTITY % reduceiframeDTD SYSTEM "chrome://reduceiframe/locale/reduceiframe.dtd" >
@@ -8,7 +8,19 @@
     %browserDTD;
 ]>
 
-<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<overlay xmlns:html="http://www.w3.org/1999/xhtml" 
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<html:style type="text/css">
+    menu.allow-script
+    {
+        list-style-image: url("chrome://reduceiframe/skin/utility.png")
+    }
+
+    menu.stop-script
+    {
+        list-style-image: url("chrome://reduceiframe/skin/disallow.png")
+    }
+</html:style>
 
 <script src="chrome://reduceiframe/content/reduceiframe.js" type="application/javascript" />
 
@@ -27,9 +39,7 @@
 
   <menuitem id="context-reloadframe" oncommand="gReduceIframe.reloadFrame(gContextMenu.target.ownerDocument);"/>
   <menuitem id="context-openframeintab" oncommand="gReduceIframe.doCmd(gContextMenu, 'openFrameInTab');"/>
-  <menuitem id="context-openframe" value="[&quot;&openFrameCmd.label;&quot; , &quot;&sandboxFrameCmd.label;&quot;]"
-            alter="[&quot;&openFrameCmd.accesskey;&quot; , &quot;&sandboxFrameCmd.accesskey;&quot;]"
-            oncommand="gReduceIframe.doCmd(gContextMenu, 'openFrame');"/>
+  <menuitem id="context-openframe" value="0" oncommand="gReduceIframe.doCmd(gContextMenu, 'openFrame');"/>
   <menuitem id="context-showonlythisframe" oncommand="gReduceIframe.doCmd(gContextMenu, 'showOnlyThisFrame');"/>
 
 </overlay>

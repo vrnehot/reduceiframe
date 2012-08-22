@@ -2,9 +2,10 @@
 
 const krakazy = /(^(\/|\\|\s|:|@|#|\?)+)|((\/|\\|\s|:|@|#|\?)+$)/g;
 
-function setHeaderHint(adomain)
+function closeShadow(evt)
 {
-  document.getElementById("hint-domain").value = adomain;    
+    window.removeEventListener("activate", closeShadow, false);
+    if(window.arguments[1]) window.arguments[1].close();
 }
 
 function trimTerim(alist, atrim)
@@ -15,13 +16,37 @@ function trimTerim(alist, atrim)
     catch(err) {}
 
     var theretval = [];
-    for(var i = 0; alist.length > i; ++i)
+    for(let i = 0; alist.length > i; ++i)
     {
-        var valusha = alist[i].replace(atrim, "");
-        if(valusha.length >> 2) theretval.push(valusha);
+        let valusha = alist[i].replace(atrim, "");
+        if(valusha.length >> 2)
+        {
+            let theval = valusha.replace(/^\.|\.$/g, "");
+            let thetest = [ theval, ("." + theval), (theval + "."), ("." + theval + ".") ]
+                .every( function(avalue) { return ((theretval.indexOf(avalue) + 1) === 0) } );
+            if(thetest) theretval.push(valusha);
+        }
     }
     return theretval;
 };
+
+function dlgLoad()
+{
+    const btn2tiptext = { extra1: "buttonlabelhelp", extra2: "buttonlabeldisclosure" }
+    try {
+        var thedlg = document.getElementById("pref-dlg");
+        for (let index in btn2tiptext)
+        {
+            let theval = thedlg.getAttribute(btn2tiptext[index]);
+            thedlg.getButton(index).tooltipText = theval;
+        }
+    }
+    catch(err) {
+        Components.utils.reportError(err)
+    }
+
+    back2front("back-list", "front-list");    
+}
 
 function back2front(aback, afront)
 {
@@ -33,9 +58,17 @@ function back2front(aback, afront)
 
 function front2back(afront, aback)
 {
-    afront = document.getElementById(afront);
+    let valusha = document.getElementById(afront).value;
+        valusha = getInput(valusha);    
+    aback = document.getElementById(aback);
+    aback.value = valusha;
+    aback.doCommand();
+};
 
-    var valusha = afront.value.split(/\s+|,/);
+function getInput(avalue)
+{
+    let valusha = avalue.replace(/\.+/g, ".");
+        valusha = valusha.split(/\s+|,/);
         valusha = trimTerim(valusha, krakazy);     
 //    dump("_dvk_dbg_, preference:\t");
     if(valusha.length > 0)
@@ -45,8 +78,20 @@ function front2back(afront, aback)
         valusha = valusha.toLowerCase();
     }
         else valusha = "";
-    
-    aback = document.getElementById(aback);
-    aback.value = valusha;
-    aback.doCommand();
+    return valusha;
+}
+
+function dlgApply(afront)
+{
+    try {
+        let valusha = document.getElementById(afront).value;
+            valusha = getInput(valusha);
+        document.getElementById("pref-list").valueFromPreferences = valusha;
+//      front2back("front-list", "back-list");
+    }
+    catch(err) {
+        Components.utils.reportError(err)
+    }
+
+    back2front("back-list", "front-list");
 };

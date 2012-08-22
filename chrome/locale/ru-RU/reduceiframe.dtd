@@ -1,21 +1,23 @@
-<!ENTITY setitle.menuSandbox "Открыть фрэйм в песочнице сменит команду Открыть в новом окне:">
+<!ENTITY setitle.menuSandbox "Открыть фрейм в песочнице сменит команду Открыть в новом окне:">
 <!ENTITY tooltiptext.contextMenu "контекстное меню сабфрэйма.">
-<!ENTITY setitle.stopOnlyIframe "Подавлять только елементы IFRAME:">
 <!ENTITY setitle.stopOnlyXSite "Подавлять только междоменное взаимодействие:">
 <!ENTITY tooltiptext.stopOnlyXSite "рекомендуется для почтового клиента или соцсетей">
 <!ENTITY setitle.stopOnlyJavaScript "Подавлять только исполнение скрипта:">
 <!ENTITY setdesc.stopOnlyJavaScript "для отмены ограничений перегрузите содержимое сабфрэйма.">
-<!ENTITY eraseIFrameCmd.label   "Удалить фрэйм">
+<!ENTITY eraseIFrameCmd.label   "Удалить фрейм">
 <!ENTITY eraseIFrameCmd.accesskey  "У">
-<!ENTITY sandboxFrameCmd.label   "Открыть фрэйм в песочнице">
+<!ENTITY sandboxFrameCmd.label   "Открыть фрейм в песочнице">
 <!ENTITY sandboxFrameCmd.accesskey  "н">
 <!ENTITY dlg.title "Сайты белого списока">
 <!ENTITY whitelistFrameCmd.label   "Белый список...">
 <!ENTITY whitelistFrameCmd.accesskey  "Б">
 <!ENTITY btnApply.label "Применить">
 <!ENTITY btnApply.accesskey "П">
+<!ENTITY btnApply.tooltiptext "внедрить текущий ввод">
+<!ENTITY btnReset.label "Сбросить">
+<!ENTITY btnReset.accesskey "С">
+<!ENTITY btnReset.tooltiptext "сбросить текущий ввод">
 <!ENTITY tooltiptext.textbox "домен исходного фрэйма">
 <!ENTITY tooltiptext.button "применяется вместе с предъидущим пунктом">
-<!ENTITY setitle.userInterface  "Пользовательский интерфэйс:">
+<!ENTITY setitle.userInterface  "Пользовательский интерфейс:">
 <!ENTITY setitle.contentPolicy  "Правила политики:">
-

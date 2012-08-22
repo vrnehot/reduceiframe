@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<!DOCTYPE groupbox SYSTEM "chrome://reduceiframe/locale/reduceiframe.dtd">
+<!DOCTYPE vbox SYSTEM "chrome://reduceiframe/locale/reduceiframe.dtd">
 
 <vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" >
-
   <!-- setting type="string" pref="extensions.reduceiframe.stopNotify" hidden="true"  dir="reverse" -->
-  <!--setting type="bool" pref="extensions.reduceiframe.stopOnlyIframe" title="&setitle.stopOnlyIframe;" -->
-
    <setting title="&setitle.contentPolicy;" type="control" disabled="true" />
+   <setting type="bool" pref="extensions.reduceiframe.stopOnlyJavaScript" 
+	title="&setitle.stopOnlyJavaScript;" desc="&setdesc.stopOnlyJavaScript;" />
    <setting type="bool" pref="extensions.reduceiframe.stopOnlyXSite"
 	    title="&setitle.stopOnlyXSite;" tooltiptext="&tooltiptext.stopOnlyXSite;" />
    <setting type="control" dir="reverse" tooltiptext="&tooltiptext.button;" desc="  ">
 <button oncommand="window.openDialog('chrome://reduceiframe/content/dlg.xul', this.label, 'chrome,titlebar,centerscreen,modal,resizable');"
-	 label="&whitelistFrameCmd.label;"   />
+	 label="&whitelistFrameCmd.label;">
+</button>
    </setting>
-   <setting type="bool" pref="extensions.reduceiframe.stopOnlyJavaScript" 
-	title="&setitle.stopOnlyJavaScript;" desc="&setdesc.stopOnlyJavaScript;" />
+   <setting title="&setitle.userInterface;" type="control" disabled="true" />
    <setting type="boolint" pref="extensions.reduceiframe.menuSandbox" on="1" off="0"
 	    desc="&tooltiptext.contextMenu;" title="&setitle.menuSandbox;" />
+   <setting title=" " type="control" disabled="true" />
 </vbox>

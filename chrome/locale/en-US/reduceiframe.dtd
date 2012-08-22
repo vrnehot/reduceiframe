@@ -1,6 +1,5 @@
 <!ENTITY setitle.menuSandbox "Open Frame in Sandbox instead of New Window:">
 <!ENTITY tooltiptext.contextMenu "for the context menu of a frame.">
-<!ENTITY setitle.stopOnlyIframe "Only iframe elements will be rejected:">
 <!ENTITY setitle.stopOnlyXSite "It stops only cross-site conversion:">
 <!ENTITY tooltiptext.stopOnlyXSite "This is recommended for mail client or community net.">
 <!ENTITY setitle.stopOnlyJavaScript "It stops only javascript:">
@@ -14,6 +13,10 @@
 <!ENTITY whitelistFrameCmd.accesskey  "L">
 <!ENTITY btnApply.label "Apply">
 <!ENTITY btnApply.accesskey "A">
+<!ENTITY btnApply.tooltiptext "apply current input">
+<!ENTITY btnReset.label "Reset">
+<!ENTITY btnReset.accesskey "R">
+<!ENTITY btnReset.tooltiptext "reset current input">
 <!ENTITY tooltiptext.textbox "source frame url">
 <!ENTITY tooltiptext.button "take effect with previous item">
 <!ENTITY setitle.userInterface  "User Interface:">

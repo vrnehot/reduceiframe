@@ -29,7 +29,7 @@ const   regexNormhost = /(^\.+www\.)|(^\.+)/g;     // some dot 2 one dot
 function str2list(alist)
 {
     let result = [];
-    alist = alist.toLowerCase().split(/,|\n/);    
+    alist = alist.toLowerCase().replace(/\.+/g, ".").split(/,|\n/);    
     for each (let theval in alist)
     {
         theval = theval.replace(regexBiditrimX, "");

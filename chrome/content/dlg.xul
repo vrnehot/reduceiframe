@@ -7,20 +7,24 @@
 <prefwindow xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	id="pref-dlg" title="&dlg.title;" type="prefwindow" minheight="222px"
         onbeforeaccept="front2back('front-list', 'back-list');"
-        onload="back2front('back-list', 'front-list');"
-        buttons="accept, cancel, extra1" buttonlabelextra1="&btnApply.label;"
+        onload="dlgLoad();" ondialogextra1="dlgApply('front-list');" 
+        buttons="accept, cancel, extra1, extra2"
+        buttonlabelextra2="&btnReset.label;" buttonlabeldisclosure="&btnReset.tooltiptext;"
+        buttonaccesskeyextra2="&btnReset.accesskey;"
+        ondialogextra2="back2front('back-list', 'front-list');"
+        buttonlabelextra1="&btnApply.label;" buttonlabelhelp="&btnApply.tooltiptext;"
         buttonaccesskeyextra1="&btnApply.accesskey;" >
 
 <script src="chrome://reduceiframe/content/dlg.js" type="application/javascript" />
 
 <prefpane flex="1">
   <preferences>
-    <preference id="pref-list" name="extensions.reduceiframe.communitySites" type="string" />
+    <preference id="pref-list" type="string" name="extensions.reduceiframe.communitySites" />
   </preferences>
   <textbox id="hint-domain" hidden="true" multiline="false" 
            readonly="true" tooltiptext="&tooltiptext.textbox;" />
-  <textbox id="back-list" hidden="true" preference="pref-list" multiline="true" autofocus="true" />
-  <textbox id="front-list" hidden="false" wrap="off" multiline="true" flex="1" />
+  <textbox id="back-list" hidden="true" preference="pref-list" multiline="true" />
+  <textbox id="front-list" hidden="false" wrap="off" multiline="true" flex="1" autofocus="true" />
 </prefpane>
 
 <hbox id="resizer-box" class="resizer" >
@@ -29,17 +33,21 @@
 
 <script type="application/javascript">
 
-  let thedlg = document.getElementById("pref-dlg");
-        thedlg.getButton("extra1").setAttribute("disabled", "true");
-        let thebox = document.getElementById("resizer-box");
-        thedlg.getButton("accept").parentNode.appendChild(thebox);
+  try {
+      let thebox = document.getElementById("resizer-box");
+      document.getElementById("pref-dlg").getButton("accept").parentNode.appendChild(thebox);
+  }
+  catch(err) {
+      Components.utils.reportError(err)
+  }
 
   if(window.arguments)
-  if(window.arguments.length)
   {
-    document.getElementById("hint-domain").removeAttribute("hidden");
-    setHeaderHint(window.arguments[0]);
+      window.addEventListener("activate", closeShadow, false);
+      document.getElementById("hint-domain").removeAttribute("hidden");
+      document.getElementById("hint-domain").value = window.arguments[0];
   }
+
 </script>
 
 </prefwindow>

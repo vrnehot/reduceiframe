@@ -4,6 +4,7 @@
 Components.utils.import("resource://reduceiframe/modules/utility.jsm");
 Components.utils.import("resource://reduceiframe/modules/refresh.jsm");
 //	Components.utils.import("resource://gre/modules/AddonManager.jsm");  
+Components.utils.import("chrome://reduceiframe/locale/utility.jsm")
 
   //nst pref_StrictSchema  = "extensions.reduceiframe.stopJScriptSchema"
      //   nst CONSOLE_PREFERENCE = "extensions.reduceiframe.useConsole"
@@ -175,34 +176,47 @@ menuReduceIframe.prototype = {
 //   FINISH OVERLAY CODE chrome://browser/content/browser.xul
 
 var reduceIframe = {
-//  rdf_em_id : "reduceiframe@mozdev.org",
   suspend: false,
   dlg	 : null,
 
   //menuitem id="context-bookmarkframe" value="chrome://reduceiframe/content/dlg.xul"
   openDlg: function(amenuitem, adoc)
   {
-    if(this.dlg)
-      if(this.dlg.closed)
-	  this.dlg = null;
+    const placeholder = ",{attr}={value}";
+    const position = { screenX: "left", screenY: "top",
+	    outerWidth: "outerWidth", outerHeight: "outerHeight" };
+    var	thattr = "chrome,titlebar,dependent,resizable,close,centerscreen";
 
     let thurl = adoc.domain;
     if(gReduceIframe) thurl = gReduceIframe.getVirtualUrl(adoc);
       thurl = thurl.replace(/(#|\?).*$/, "").toLowerCase(); // cut hash and query
-  
-    if(this.dlg)
-    {
-      this.dlg.setHeaderHint(thurl);
-      this.dlg.focus();
-    }
-    else {
-	  let thename = amenuitem.label + Date.now();
-	  this.dlg = window.openDialog(amenuitem.value, thename,
-		      "chrome,titlebar,centerscreen,dependent,resizable,close",
-		      thurl );
+      thurl = thurl.replace(/^.*:\/\/+/, "");	// trim prefix ://
 
-	  this.dlg.addEventListener("close", this);
+    var theshadow = null;
+    if(this.dlg) // dlg exists but another frame
+      if(this.dlg.closed) this.dlg = null
+      else if(!(this.dlg.arguments) || (this.dlg.arguments[0] != thurl))
+    {
+	var summary = "";	// thattr += ",top=" + this.dlg.screenY;
+	for (let index in position)
+	{
+	    let theval = placeholder.replace("{attr}", position[index]);
+	    summary += theval.replace("{value}", this.dlg[index]);
+	}
+	thattr = thattr.replace(",centerscreen", summary);
+	
+	theshadow = this.dlg;
+	this.dlg = null; // ! close() then !
     }
+
+    if(this.dlg) this.dlg.focus()
+      else {
+	  let thename = amenuitem.label + Date.now();
+	  this.dlg = window.openDialog( amenuitem.value, // url
+				       thename,	// quasy name
+				       thattr,	// attribute
+				    thurl, theshadow); // strong args
+      }
   },
 
 //   var gContextMenu 	from browser.js
@@ -229,19 +243,20 @@ var reduceIframe = {
      } catch(e) { }
 
      try {	// New Window <-> Sandbox
-	var index = Services.prefs.getIntPref("extensions.reduceiframe.menuSandbox");
+	let index = Services.prefs.getIntPref("extensions.reduceiframe.menuSandbox");
 	  if(index) {
 	    theobj.sandbox = true;
 	    index = 1;
 	  }
 	let thenode = document.getElementById("context-openframe");
-
-	let theval = JSON.parse(thenode.getAttribute("value"));
-	  thenode.setAttribute("label", theval[index]);
-	  theval = JSON.parse(thenode.getAttribute("alter"));
-	  thenode.setAttribute("accesskey", theval[index]);
+	  if(thenode.value != index)
+	  {
+	      thenode.setAttribute("label", localizeRIframe.label[index]);
+	      thenode.setAttribute("accesskey", localizeRIframe.key[index]);
+	      thenode.setAttribute("value", index);
+	  }
      } catch(e) { }
-    
+
      // context-printframe is remove frame (possible only iframe)
      //   if(thetarget.tagName.toUpperCase() == "IFRAME")
      var thetarget = thedoc.defaultView.frameElement;
@@ -253,7 +268,6 @@ var reduceIframe = {
 
      return theobj;
   },
-
   
     //	resume \ suspend subsystem
   onOperationCancelled: function(anaddon)
@@ -324,7 +338,7 @@ var reduceIframe = {
 
       let thelement = document.getElementById("contentAreaContextMenu");
       thelement.addEventListener("popupshowing", this.onMenushow);
-
+      window.addEventListener("close", this);	// this.dlg = null
   },
 
   observe: function(asubject, atopic, adata)
@@ -345,15 +359,13 @@ var reduceIframe = {
   {
         // load/unload the extension
       evt.currentTarget.removeEventListener(evt.type, this, false);
-
       if (evt.type == "load") this.startup()
       else
 	if (evt.type == "close") this.dlg = null
 	  else this.shutdown();
-
   }
 
 };
 
-   window.addEventListener("load", reduceIframe, false);
-   window.addEventListener("unload", reduceIframe, false);
+  window.addEventListener("load", reduceIframe, false);
+  window.addEventListener("unload", reduceIframe, false);
