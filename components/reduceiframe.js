@@ -26,13 +26,14 @@ const   regexNormhost = /(^\.+www\.)|(^\.+)/g;     // some dot 2 one dot
 
 //  in: preference from "misplacedSchema" or "communitySites",
 //	out: protocol folder
-function str2list(alist)
+function str2list(alist, adot)
 {
-    let result = [];
-    alist = alist.toLowerCase().replace(/\.+/g, ".").split(/,|\n/);    
-    for each (let theval in alist)
+    var result = [];
+    let thelist = alist.toLowerCase().split(/,|\n/);
+    for each (let theval in thelist)
     {
         theval = theval.replace(regexBiditrimX, "");
+	if(adot) theval = ("." + theval).replace(/\.+/g, ".");
         if(theval.length >> 1) result.push(theval)
     }
     return result;
@@ -110,9 +111,9 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
         this[theval] = this._branch.getBoolPref(theval);
 
     let theval  = "misplacedSchema";
-    this[theval]= str2list(this._branch.getCharPref(theval));
+    this[theval]= str2list(this._branch.getCharPref(theval), false);
 	theval  = "communitySites";
-    this[theval]= str2list(this._branch.getCharPref(theval));
+    this[theval]= str2list(this._branch.getCharPref(theval), true);
 
     this._boolConsole = this._branch.getBoolPref("useConsole");
     this._branch.addObserver("", this, true);
@@ -328,15 +329,16 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
 
  observe: function(subject, atopic, adata)
  {
+    var thedot = false;
     if(atopic == "nsPref:changed")
     try {
 //	dump("_dvk_dbg_, component observe:\t"); dump(adata); dump("\n");
     switch (adata)
     {
+    case "communitySites" : thedot = true;
     case "misplacedSchema":
-    case "communitySites" :
-        var theval  = this._branch.getCharPref(adata);
-        this[adata] = str2list(theval);
+        let theval  = this._branch.getCharPref(adata);
+        this[adata] = str2list(theval, thedot);
     break;
 
     case "useConsole" :
