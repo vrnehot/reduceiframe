@@ -17,7 +17,7 @@
 <!ENTITY btnReset.label "Reset">
 <!ENTITY btnReset.accesskey "R">
 <!ENTITY btnReset.tooltiptext "reset current input">
-<!ENTITY tooltiptext.textbox "source frame url">
+<!ENTITY tooltiptext.textbox "url of calling frame">
 <!ENTITY tooltiptext.button "take effect with previous item">
 <!ENTITY setitle.userInterface  "User Interface:">
 <!ENTITY setitle.contentPolicy  "Content Policy Rules:">
