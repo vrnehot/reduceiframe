@@ -1,18 +1,22 @@
+"use strict";
 //   hereinafter, subsystem to erase the refresh position from http header, 
 //      in redirect subdocument case.
 
-var EXPORTED_SYMBOLS = ["eraseRefresh"]
+//  var EXPORTED_SYMBOLS = ["eraseRefresh"]
+var EXPORTED_SYMBOLS = ["moduleRIframe"]
 
 Components.utils.import("resource://gre/modules/Services.jsm")
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm")
+Components.utils.import("resource://reduceiframe/modules/utility.jsm")
 
-Components.utils.import("resource://reduceiframe/modules/utility.jsm");
-//nst LOAD_DOCUMENT_URI = Components.interfaces.nsIChannel.LOAD_DOCUMENT_URI
-//  pref_BlockRefresh  = "accessibility.blockautorefresh"
+if ("undefined" == typeof(moduleRIframe))
+{   //  it should be defined by an import line above.
+    var moduleRIframe = { }
+}   
 
 //   hereinafter, subsystem to erase the refresh position from http header, in re subdocument case.
-var eraseRefresh = {
-//    _boolLively : false,
+moduleRIframe.refresh = {
+
     preference  : "accessibility.blockautorefresh",
 
     //	for .utils.getWeakReference(
@@ -46,7 +50,7 @@ var eraseRefresh = {
             else thecode = 0;
 	} catch (e) { thecode = 0; }
 
-        if(thecode) utilityRIframe.report(thewindow, thesource, utilityRIframe.msgRefresh);
+    if(thecode) moduleRIframe.report(thewindow, thesource, moduleRIframe.msgRefresh);
 
         return;
     },

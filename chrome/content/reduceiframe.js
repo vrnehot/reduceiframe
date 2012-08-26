@@ -1,8 +1,8 @@
 "use strict";
 //   Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 //   Components.utils.import("resource://gre/modules/Services.jsm");
-Components.utils.import("resource://reduceiframe/modules/utility.jsm");
-Components.utils.import("resource://reduceiframe/modules/refresh.jsm");
+Components.utils.import("resource://reduceiframe/modules/utility.jsm")
+Components.utils.import("resource://reduceiframe/modules/refresh.jsm")
 //	Components.utils.import("resource://gre/modules/AddonManager.jsm");  
 Components.utils.import("chrome://reduceiframe/locale/utility.jsm")
 
@@ -29,7 +29,7 @@ menuReduceIframe.prototype = {
   {
      this._frameurl = aframe.location.href;
      this.blank = (this._frameurl.indexOf("about:blank") === 0);
-     var thevalue = utilityRIframe.where(aframe);
+     var thevalue = moduleRIframe.where(aframe);
      if(this.blank && (thevalue.length >> 1))
      {
           this._frameurl = thevalue;
@@ -175,7 +175,8 @@ menuReduceIframe.prototype = {
 }	//	end of menuReduceIframe
 //   FINISH OVERLAY CODE chrome://browser/content/browser.xul
 
-var reduceIframe = {
+//	var reduceIframe = {
+menuReduceIframe.main = {
   suspend: false,
   dlg	 : null,
 
@@ -273,7 +274,7 @@ var reduceIframe = {
   onOperationCancelled: function(anaddon)
   {
       if(this.suspend && !(anaddon.userDisabled))
-      if(anaddon.id === utilityRIframe.id)
+      if(anaddon.id === moduleRIframe.id)
       try {	//	.pendingOperations ?
   //    dump("_dvk_dbg_, onOperationCancelled:\t"); dump(anaddon.id); dump("\n");
 	  this.startup();
@@ -288,7 +289,7 @@ var reduceIframe = {
     //	suspend \ resume subsystem
   onDisabling: function(anaddon, aneeds)
   {
-      if(anaddon.id === utilityRIframe.id)
+      if(anaddon.id === moduleRIframe.id)
       if(aneeds)  // the pending operation is interested
       try {	
 	  this.shutdown(true);
@@ -332,10 +333,10 @@ var reduceIframe = {
 
   startup: function() // Initialize the extension
   {
-      eraseRefresh.update();
-      Services.prefs.addObserver(eraseRefresh.preference, this, true);
+      moduleRIframe.refresh.update();
+      Services.prefs.addObserver(moduleRIframe.refresh.preference, this, true);
       AddonManager.addAddonListener(this);
-
+//dump("_dvk_dbg_, rediceiframe, startup.\n");
       let thelement = document.getElementById("contentAreaContextMenu");
       thelement.addEventListener("popupshowing", this.onMenushow);
       window.addEventListener("close", this);	// this.dlg = null
@@ -344,15 +345,16 @@ var reduceIframe = {
   observe: function(asubject, atopic, adata)
   {
       if(atopic === "nsPref:changed")
-	  if(adata == eraseRefresh.preference)
-	      eraseRefresh.update();
+	  if(adata == moduleRIframe.refresh.preference)
+	      moduleRIframe.refresh.update();
   },
 
   shutdown: function(asuspend)
   {
       if(!asuspend) AddonManager.removeAddonListener(this);
-      Services.prefs.removeObserver(eraseRefresh.preference, this);
-      eraseRefresh.unregister();
+      Services.prefs.removeObserver(moduleRIframe.refresh.preference, this);
+      moduleRIframe.refresh.unregister();
+//dump("_dvk_dbg_, rediceiframe, shutdown.\n");
   },
 
   handleEvent: function( evt )
@@ -367,5 +369,5 @@ var reduceIframe = {
 
 };
 
-  window.addEventListener("load", reduceIframe, false);
-  window.addEventListener("unload", reduceIframe, false);
+  window.addEventListener("load", menuReduceIframe.main, false);
+  window.addEventListener("unload", menuReduceIframe.main, false);

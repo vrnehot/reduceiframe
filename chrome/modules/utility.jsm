@@ -1,13 +1,17 @@
+"use strict";
+//  here are some common used functions
+//r EXPORTED_SYMBOLS = ["utilityRIframe"]
+var EXPORTED_SYMBOLS = ["moduleRIframe"]
 
-var EXPORTED_SYMBOLS = ["utilityRIframe"]
-
-Components.utils.import("resource://gre/modules/Services.jsm");
+Components.utils.import("resource://gre/modules/Services.jsm")
 
 const logSIGNATURE  = "Subdocument content policy component."
 const logRefresh    = "The refresh position have been removed from the http header."
 const rdf_em_id     = "reduceiframe@mozdev.org"
 
-var utilityRIframe = {
+if ("undefined" == typeof(moduleRIframe))
+{
+var moduleRIframe = {
   msgRefresh : logRefresh,
   SIGNATURE : logSIGNATURE,
   id        : rdf_em_id,
@@ -61,4 +65,5 @@ var utilityRIframe = {
         else return "";
   }
 
+}
 }

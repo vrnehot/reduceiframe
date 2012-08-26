@@ -15,7 +15,6 @@
 </button>
    </setting>
    <setting title="&setitle.userInterface;" type="control" disabled="true" />
-   <setting type="boolint" pref="extensions.reduceiframe.menuSandbox" on="1" off="0"
-	    desc="&tooltiptext.contextMenu;" title="&setitle.menuSandbox;" />
+   <setting type="boolint" pref="extensions.reduceiframe.menuSandbox" on="1" off="0" title="&setitle.menuSandbox;" />
    <setting title=" " type="control" disabled="true" />
 </vbox>

@@ -1,7 +1,7 @@
-<!ENTITY setitle.menuSandbox "Открыть фрейм в песочнице сменит команду Открыть в новом окне:">
+<!ENTITY setitle.menuSandbox "Открыть фрейм в песочнице заменит команду Открыть в новом окне:">
 <!ENTITY tooltiptext.contextMenu "контекстное меню сабфрэйма.">
 <!ENTITY setitle.stopOnlyXSite "Подавлять только междоменное взаимодействие:">
-<!ENTITY tooltiptext.stopOnlyXSite "рекомендуется для почтового клиента или соцсетей">
+<!ENTITY tooltiptext.stopOnlyXSite "Рекомендуется для почтового клиента или соцсетей.">
 <!ENTITY setitle.stopOnlyJavaScript "Подавлять только исполнение скрипта:">
 <!ENTITY setdesc.stopOnlyJavaScript "для отмены ограничений перегрузите содержимое сабфрэйма.">
 <!ENTITY eraseIFrameCmd.label   "Удалить фрейм">
@@ -17,7 +17,7 @@
 <!ENTITY btnReset.label "Сбросить">
 <!ENTITY btnReset.accesskey "С">
 <!ENTITY btnReset.tooltiptext "сбросить текущий ввод">
-<!ENTITY tooltiptext.textbox "домен исходного фрэйма">
-<!ENTITY tooltiptext.button "применяется вместе с предъидущим пунктом">
-<!ENTITY setitle.userInterface  "Пользовательский интерфейс:">
-<!ENTITY setitle.contentPolicy  "Правила политики:">
+<!ENTITY tooltiptext.textbox "адрес исходного фрэйма">
+<!ENTITY tooltiptext.button "Список действует в всвязке с пунктом выше.">
+<!ENTITY setitle.userInterface  "Контекстное меню сабфрэйма.">
+<!ENTITY setitle.contentPolicy  "Правила политики.">

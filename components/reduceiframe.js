@@ -1,9 +1,9 @@
 "use strict";
 
-Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
-Components.utils.import("resource://gre/modules/AddonManager.jsm");  
-//  Components.utils.import("resource://gre/modules/Services.jsm");
-Components.utils.import("resource://reduceiframe/modules/utility.jsm");
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm")
+Components.utils.import("resource://gre/modules/AddonManager.jsm")
+//  Components.utils.import("resource://gre/modules/Services.jsm")
+Components.utils.import("resource://reduceiframe/modules/utility.jsm")
 
 const NS_SUCCEEDED  = Components.results.NS_OK
 const LOAD_REPLACE  = Components.interfaces.nsIChannel.LOAD_REPLACE
@@ -83,7 +83,7 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
  onOperationCancelled: function(anaddon)
  {
     if(this._suspend && !(anaddon.userDisabled))
-    if(anaddon.id === utilityRIframe.id)
+    if(anaddon.id === moduleRIframe.id)
     try {	//	.pendingOperations ?
 	this.resume();
 	this._suspend = false;
@@ -97,7 +97,7 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
     //	suspend \ resume subsystem
  onDisabling: function(anaddon, aneeds)
  {
-    if(anaddon.id === utilityRIframe.id)
+    if(anaddon.id === moduleRIframe.id)
 	if(aneeds)  // the pending operation is interested
     {
 	this._branch.removeObserver("", this);
@@ -178,7 +178,7 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
     for each (let theval in this.misplacedSchema)
         if(thescheme === theval)
         {
-            utilityRIframe.report(thetop.defaultView, thesource, LOG_SCHEMA, theval);
+            moduleRIframe.report(thetop.defaultView, thesource, LOG_SCHEMA, theval);
             return REJECT_REQUEST;
         }
 
@@ -248,7 +248,7 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
         Components.utils.reportError(e) //  this._boolConsole
     }
     else
-    if(!utilityRIframe.verify(thedoc, thesource))
+    if(!(moduleRIframe.verify(thedoc, thesource)))
 	result = REJECT_REQUEST; //	main charge
 
     if(result === LOAD_ACCEPT)
@@ -271,7 +271,7 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
     if(this._boolConsole)
     try {
     var theconsole = thetop.defaultView.console;
-        theconsole.info(utilityRIframe.SIGNATURE);
+        theconsole.info(moduleRIframe.SIGNATURE);
         theconsole.group(LOG_FIRSTIME);
         try {
             theconsole.info(thesource);
@@ -317,7 +317,7 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
     }
 
     try {
-	utilityRIframe.append(thedoc, thesource);
+	moduleRIframe.append(thedoc, thesource);
     }
     catch (e)
     {

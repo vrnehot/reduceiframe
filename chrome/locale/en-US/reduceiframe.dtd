@@ -1,4 +1,4 @@
-<!ENTITY setitle.menuSandbox "Open Frame in Sandbox instead of New Window:">
+<!ENTITY setitle.menuSandbox "Open Frame in Sandbox command instead of Open in New Window:">
 <!ENTITY tooltiptext.contextMenu "for the context menu of a frame.">
 <!ENTITY setitle.stopOnlyXSite "It stops only cross-site conversion:">
 <!ENTITY tooltiptext.stopOnlyXSite "This is recommended for mail client or community net.">
@@ -17,7 +17,7 @@
 <!ENTITY btnReset.label "Reset">
 <!ENTITY btnReset.accesskey "R">
 <!ENTITY btnReset.tooltiptext "reset current input">
-<!ENTITY tooltiptext.textbox "url of calling frame">
-<!ENTITY tooltiptext.button "take effect with previous item">
-<!ENTITY setitle.userInterface  "User Interface:">
-<!ENTITY setitle.contentPolicy  "Content Policy Rules:">
+<!ENTITY tooltiptext.textbox "address of target frame">
+<!ENTITY tooltiptext.button "This list takes effect in conjugation with item above.">
+<!ENTITY setitle.userInterface  "The Frame's Context Menu.">
+<!ENTITY setitle.contentPolicy  "The Content Policy Rules.">

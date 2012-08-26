@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 
-<!DOCTYPE overlay [
-<!ENTITY % reduceiframeDTD SYSTEM "chrome://reduceiframe/locale/reduceiframe.dtd" >
-    %reduceiframeDTD;
-<!ENTITY % browserDTD SYSTEM "chrome://browser/locale/browser.dtd" >
-    %browserDTD;
-]>
+<!DOCTYPE overlay SYSTEM "chrome://reduceiframe/locale/reduceiframe.dtd">
 
 <overlay xmlns:html="http://www.w3.org/1999/xhtml" 
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
@@ -25,12 +20,12 @@
 <script src="chrome://reduceiframe/content/reduceiframe.js" type="application/javascript" />
 
  <menu id="frame" class="menu-iconic allow-script"
-       onpopupshowing="gReduceIframe = reduceIframe.popupshow(gContextMenu);"
+       onpopupshowing="gReduceIframe = menuReduceIframe.main.popupshow(gContextMenu);"
        onpopuphiding="gReduceIframe = null;"  />
 
  <menuitem id="context-bookmarkframe" label="&whitelistFrameCmd.label;"
     value="chrome://reduceiframe/content/dlg.xul" accesskey="&whitelistFrameCmd.accesskey;"
-    oncommand="reduceIframe.openDlg(this, gContextMenu.target.ownerDocument);" />
+    oncommand="menuReduceIframe.main.openDlg(this, gContextMenu.target.ownerDocument);" />
 
  <menuitem id="context-printframe"
            oncommand="gReduceIframe.eraseFrame(gContextMenu.target.ownerDocument);"
