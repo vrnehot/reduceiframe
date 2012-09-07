@@ -9,10 +9,10 @@
         onbeforeaccept="front2back('front-list', 'back-list');"
         onload="dlgLoad();" ondialogextra1="dlgApply('front-list');" 
         buttons="accept, cancel, extra1, extra2"
-        buttonlabelextra2="&btnReset.label;" buttonlabeldisclosure="&btnReset.tooltiptext;"
+        buttonlabelextra2="&btnReset.label;"
         buttonaccesskeyextra2="&btnReset.accesskey;"
         ondialogextra2="back2front('back-list', 'front-list');"
-        buttonlabelextra1="&btnApply.label;" buttonlabelhelp="&btnApply.tooltiptext;"
+        buttonlabelextra1="&btnApply.label;"
         buttonaccesskeyextra1="&btnApply.accesskey;" >
 
 <script src="chrome://reduceiframe/content/dlg.js" type="application/javascript" />

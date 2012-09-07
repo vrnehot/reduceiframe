@@ -32,19 +32,7 @@ function trimTerim(alist, atrim)
 
 function dlgLoad()
 {
-    const btn2tiptext = { extra1: "buttonlabelhelp", extra2: "buttonlabeldisclosure" }
-    try {
-        var thedlg = document.getElementById("pref-dlg");
-        for (let index in btn2tiptext)
-        {
-            let theval = thedlg.getAttribute(btn2tiptext[index]);
-            thedlg.getButton(index).tooltipText = theval;
-        }
-    }
-    catch(err) {
-        Components.utils.reportError(err)
-    }
-
+//    const btn2tiptext = { extra1: "buttonlabelhelp", extra2: "buttonlabeldisclosure" }
     back2front("back-list", "front-list");    
 }
 

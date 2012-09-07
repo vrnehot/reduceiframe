@@ -69,8 +69,8 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
  stopOnlyXSite  : false,
  stopOnlyIframe : false,	// extensions.reduceiframe.stopOnlyIframe
  stopOnlyJavaScript: false,
- misplacedSchema: [ "ftp", "mailto", "news", "data" ], //  the data conflicts with dom-inspector ext.
- communitySites : [ ".google.com", ".facebook.com", ".livejournal.com", ".twitter.com", ".vk.com" ],
+ misplacedSchema: [ "ftp", "mailto", "news", "data" ], // data sometime use in debugger and the like
+ communitySites : [ ".google.com", ".facebook.com", "javascript:false", "javascript:true", ".twitter.com", ".vk.com" ],
 
  _suspend	: false,
  _boolConsole	: false,
@@ -151,84 +151,128 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
 //    return avalue.link(auri).replace(/<A\s+HREF=/i,'<A target="_top" HREF=');
  },
 
+ _setBody : function(aContext, adoc, atagName, asource)
+ {
+    adoc.body.title = signatureFriend; // component requisite, next time path is free
+
+    if(atagName.indexOf("FRAME") > 0)	// like iframe
+    {
+	aContext.setAttribute("scrolling", "no");
+	if(!(aContext["frameborder"]))
+	    aContext.setAttribute("style", "border: dotted;");
+    }
+
+    var thinner = aContext.textContent || "";
+	thinner = thinner.replace(regexBiditrims, ""); // apply bidirectional trim
+
+    var thestub = this._link2top(asource);
+    if(atagName) //	form stub content
+    {
+	thestub += htmlStub.replace("{element}", atagName.bold());
+	for each (let theval in attrInfluence)
+	    if(theval in aContext)
+	       if(aContext[theval])
+	       {
+		   thestub += theval.quote();
+		   break;
+	       }
+    }
+    thestub += "&nbsp;&middot;";
+
+    if(thinner.length >> 2)
+	adoc.body.innerHTML = thinner + "<BR/>" + thestub;
+    else
+	adoc.body.innerHTML = thestub;
+ },
+ 
   shouldLoad : function(atype, auri, aRequestOrigin, aContext, aMimeGuess, aExtra) 
  {
     var result = LOAD_ACCEPT;
     if(this._suspend) return result;
     if((atype != TYPE_SUBDOC) || (!aContext)) return result;
 
-//  find subdoc element and top document, as acknowledge of TYPE_SUBDOCUMENT
-
     var thesource = null; // target uri
     var thescheme = null; // protocol
     var thetop = null;    // outer doc
-    var	thedoc = null;    // inner doc
 
     try {
-        thesource = auri.spec;
+        thesource = auri.spec.toLowerCase();
         thetop = aContext.ownerDocument;     //  outer doc
-        thedoc = aContext.contentDocument;   // inner doc
         thescheme = auri.scheme.toLowerCase();
-    } catch (e) {  }
+    } catch (err)
+    {
+//        Components.utils.reportError(err) //  _dvk_dbg_
+    }
+// dump("_dvk_dbg_, the scheme:\t"); dump(thescheme); dump("\n");
+    // out of context or xul document
+    if((!thetop) || (thetop.loadOverlay)) return result;
 
-    if((!thetop) || (!thedoc)) return result;	// out of context
-    if(thetop.loadOverlay) return result;	// xul document
-    
-    //	first step, filter protocol
-    for each (let theval in this.misplacedSchema)
-        if(thescheme === theval)
-        {
-            moduleRIframe.report(thetop.defaultView, thesource, LOG_SCHEMA, theval);
-            return REJECT_REQUEST;
-        }
+    let index = this.misplacedSchema.indexOf(thescheme);
+    if(index + 1)
+    {
+	try {
+            moduleRIframe.report(thetop.defaultView, thesource, LOG_SCHEMA, thescheme);
+	    this._setBody(aContext, aContext.contentDocument, "", thesource);
+	    moduleRIframe.append(aContext.contentDocument, thesource);
+	} catch (err) { }
+        return REJECT_REQUEST;
+    }
 
     if(thescheme in schemataGrata) return result;
 
     var thesame = false; // check domains and host to equal
-    if((this.stopOnlyXSite) && (thescheme != "javascript"))
-    try {
-	var isSuffix = function(ahost, asuffix)
+    if(this.stopOnlyXSite)
+    {
+	var thehost = null;
+	if(thetop.domain)
+	try {
+	var isSuffix = function(asuffix)
 	    {
-		if(!(asuffix.length > ahost.length))
+		if(!(asuffix.length > thehost.length))
 		{
-		    let index = ahost.lastIndexOf(asuffix) + asuffix.length;
-		    return (ahost.length == index);
+		    let index = thehost.lastIndexOf(asuffix) + asuffix.length;
+		    return (thehost.length == index);
 		}
 		return false;
 	    }
 
-	if((thetop.domain) && ("host" in auri))
-	{
-	    let suffix	= hostAsFirstDot(thetop.domain);
-	    var thehost = (auri.host || "").toLowerCase();
-		thehost = "." + thehost.replace(regexBiditrimX, "");
-	    if(suffix) thesame = isSuffix(thehost, suffix);
+	    thehost = (auri.host || "").toLowerCase();
+	    thehost = "." + thehost.replace(regexBiditrimX, "");
 
-	    if(!thesame)
-	    for each (let suffix in this.communitySites)
-		if(isSuffix(thehost, suffix))
-		{
-		    thesame = true;
-		    break;
-		}
+	    let thesuffix = hostAsFirstDot(thetop.domain);
+	    if(thesuffix) thesame = isSuffix(thesuffix);
+	    if(!thesame) thesame = this.communitySites.some(isSuffix);
+//	    for each (let suffix in this.communitySites)
+//		if(isSuffix(thehost, suffix))
 	}
-	else
-	try {
-	    var thesecman = Components.classes["@mozilla.org/scriptsecuritymanager;1"]
-				.getService(SECURITY_MANAGER);
+	catch (e) { thehost = null
+	}
+
+	var thesecman = null;
+	if(!thehost)	// if address in white list
+	if(this.communitySites.indexOf("." + thesource) + 1) thesame = true
+	else try {
+	    thesecman = Components.classes["@mozilla.org/scriptsecuritymanager;1"]
+			.getService(SECURITY_MANAGER);
 	    thesecman.checkSameOriginURI(thetop.documentURIObject, auri, false);
 	    thesame = true;
 	}
-	finally {  thesecman = null  }
-    }
-    catch (e) {
-//        Components.utils.reportError(e) //  _dvk_dbg_
-    }
+	catch (e) { }
+	thesecman = null;
+    }	//	Components.utils.reportError(err) //  _dvk_dbg_
 
     if(thesame) return result; //    SameOriginURI
 
     var thagName = (aContext.tagName || "").toUpperCase();
     if((this.stopOnlyIframe) && (thagName != "IFRAME")) return result;
+
+    var	thedoc = null;    // inner doc
+    try {	// it is placed here to avoid conflict 
+		// with "Web Developer and Debugger"
+        thedoc = aContext.contentDocument;
+    } catch (err) { }
+
+    if(!thedoc) return result;	// inner doc has not been found.
 
     //	next step, filter aims to first time
     if(thedoc.documentURI == "about:blank")
@@ -275,48 +319,19 @@ var  singleComponent = {	// Make it a singleton, and do not demand prototype
         theconsole.group(LOG_FIRSTIME);
         try {
             theconsole.info(thesource);
-            if(thagName.length) theconsole.info("html, element: '%s',\t type:\t", thagName, aContext);
-//        theconsole.info("URI, original: %s\ttarget: ", thedoc.documentURI, thesource);
-//        theconsole.info("owner domain: %s,\ttarget host: ", thetop.domain, auri.host);
+            if(thagName.length) theconsole.info(
+			    "html, element: '%s',\t type:\t",
+			    thagName, aContext);
         }
         finally { theconsole.groupEnd() }
     } catch (e) {  }
 
-    try {	// only long then frame will be stopped
-	thedoc.body.title = signatureFriend; // component requisite, next time path is free
-
-	if(thagName.indexOf("FRAME") > 0)	// like iframe
-	{
-	    aContext.setAttribute("scrolling", "no");
-	    if(!(aContext["frameborder"])) aContext.setAttribute("style", "border: dotted;");
-	}
-
-	var thinner = aContext.textContent || "";
-	    thinner = thinner.replace(regexBiditrims, ""); //	apply bidirectional trim
-	if(!(thinner.length >> 2)) //	form stub content
-	{
-	    thinner = this._link2top(thesource);
-	    thinner += htmlStub.replace("{element}", thagName.bold());
-            
-                for each (let theval in attrInfluence)
-                    if(theval in aContext)
-                       if(aContext[theval])
-                       {
-                           thinner += theval.quote();
-                           break;
-                       }
-	    thinner += "&nbsp;&middot;";
-	}
-//    dump("_dvk_dbg_, stub content already exist.\n"); dump(thinner); dump("\n");
-	thedoc.body.innerHTML = thinner;
-
-    }
-    catch (e)
-    {
-	Components.utils.reportError(e)
-    }
-
     try {
+	this._setBody(aContext, thedoc, thagName, thesource)
+    }
+    catch (e) {    }
+
+    try { // save original address
 	moduleRIframe.append(thedoc, thesource);
     }
     catch (e)
